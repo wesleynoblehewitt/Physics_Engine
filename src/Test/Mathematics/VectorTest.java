@@ -3,18 +3,16 @@ package Test.Mathematics;
 import Physics.Mathematics.Vector;
 import org.junit.Test;
 
-import static Physics.Mathematics.Constants.doubleEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static Physics.Mathematics.Constants.floatEquals;
+import static org.junit.Assert.*;
 
 public class VectorTest {
 
     @Test
     public void initialisationTest(){
-        Vector vector = new Vector(3.6, 4.8);
-        assertTrue(doubleEquals(vector.getX(), 3.6));
-        assertTrue(doubleEquals(vector.getY(), 4.8));
+        Vector vector = new Vector(3.6f, 4.8f);
+        assertTrue(floatEquals(vector.getX(), 3.6f));
+        assertTrue(floatEquals(vector.getY(), 4.8f));
 
         vector = new Vector(-0, -0);
         assertEquals(vector, new Vector(0, 0));
@@ -23,21 +21,21 @@ public class VectorTest {
     @Test
     public void lengthSquaredTest(){
         Vector vector = new Vector(5, 5);
-        assertTrue(doubleEquals(vector.lengthSquared(), 50.0));
+        assertTrue(floatEquals(vector.lengthSquared(), 50));
     }
 
     @Test
     public void lengthTest(){
         Vector vector = new Vector(5, 5);
-        assertTrue(doubleEquals(vector.length(), Math.sqrt(50)));
+        assertTrue(floatEquals(vector.length(), (float) Math.sqrt(50)));
     }
 
     @Test
     public void distanceBetweenTest(){
         Vector vector = new Vector(0, 0);
-        assertTrue(doubleEquals(vector.distanceBetween(new Vector(5, 0)), 5));
-        assertTrue(doubleEquals(vector.distanceBetween(new Vector(0, 5)), 5));
-        assertTrue(doubleEquals(vector.distanceBetween(new Vector(5, 5)), 7.0710678118654755));
+        assertTrue(floatEquals(vector.distanceBetween(new Vector(5, 0)), 5));
+        assertTrue(floatEquals(vector.distanceBetween(new Vector(0, 5)), 5));
+        assertTrue(floatEquals(vector.distanceBetween(new Vector(5, 5)), 7.0710678118654755f));
     }
 
     @Test
@@ -61,7 +59,7 @@ public class VectorTest {
         Vector vector = new Vector(1, 1);
         assertEquals(vector.multiply(0), new Vector(0, 0));
         assertEquals(vector.multiply(5), new Vector(5, 5));
-        assertEquals(vector.multiply(-0.0), new Vector(0, 0));
+        assertEquals(vector.multiply(-0.0f), new Vector(0, 0));
     }
 
     @Test
@@ -97,8 +95,8 @@ public class VectorTest {
     @Test
     public void dotTest(){
         Vector vector = new Vector(1, 1);
-        assertTrue(doubleEquals(Vector.dotProduct(vector, new Vector(5, 1)), 6));
-        assertTrue(doubleEquals(Vector.dotProduct(vector, new Vector(6, 7)), 13));
+        assertTrue(floatEquals(Vector.dotProduct(vector, new Vector(5, 1)), 6));
+        assertTrue(floatEquals(Vector.dotProduct(vector, new Vector(6, 7)), 13));
     }
 
     @Test
@@ -106,15 +104,15 @@ public class VectorTest {
         Vector a = new Vector(4, 2);
         Vector b = new Vector(3, 5);
 
-        assertTrue(doubleEquals(Vector.crossProduct(a, b), 14.0));
+        assertTrue(floatEquals(Vector.crossProduct(a, b), 14));
         assertEquals(Vector.crossProduct(2, a), new Vector(4, -8));
         assertEquals(Vector.crossProduct(a, 2), new Vector(-4, 8));
     }
 
     @Test
     public void equalsTest(){
-        Vector vector = new Vector(5.6, 6.8);
-        assertTrue(vector.equals(new Vector(5.6, 6.8)));
-        assertFalse(vector.equals(new Vector(5.66, 6.88)));
+        Vector vector = new Vector(5.6f, 6.8f);
+        assertTrue(vector.equals(new Vector(5.6f, 6.8f)));
+        assertFalse(vector.equals(new Vector(5.66f, 6.88f)));
     }
 }

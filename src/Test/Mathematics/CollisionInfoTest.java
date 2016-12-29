@@ -8,10 +8,8 @@ import Physics.Objects.Material;
 import Physics.Objects.PhysicsObject;
 import org.junit.Test;
 
-import static Physics.Mathematics.Constants.doubleEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static Physics.Mathematics.Constants.floatEquals;
+import static org.junit.Assert.*;
 
 public class CollisionInfoTest {
 
@@ -24,13 +22,13 @@ public class CollisionInfoTest {
         assertEquals(info.getObjectA(), a);
         assertEquals(info.getObjectB(), b);
         assertEquals(info.getCollisionNormal(), null);
-        assertTrue(doubleEquals(info.getPenetrationDepth(), 0));
+        assertTrue(floatEquals(info.getPenetrationDepth(), 0));
 
         info = new CollisionInfo(a, b, new Vector(5, 3), 3);
         assertEquals(info.getObjectA(), a);
         assertEquals(info.getObjectB(), b);
         assertEquals(info.getCollisionNormal(), new Vector(5, 3));
-        assertTrue(doubleEquals(info.getPenetrationDepth(), 3));
+        assertTrue(floatEquals(info.getPenetrationDepth(), 3));
     }
 
     @Test

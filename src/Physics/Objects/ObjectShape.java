@@ -1,9 +1,7 @@
 package Physics.Objects;
 
 import Physics.Mathematics.Vector;
-
-import java.awt.*;
-//import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Graphics;
 
 public abstract class ObjectShape {
 

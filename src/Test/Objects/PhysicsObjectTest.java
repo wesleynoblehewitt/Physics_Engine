@@ -6,9 +6,8 @@ import Physics.Mathematics.Vector;
 import Physics.Objects.Circle;
 import Physics.Objects.Material;
 import Physics.Objects.PhysicsObject;
-import org.junit.Test;
-
 import org.junit.Assert;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,21 +16,21 @@ public class PhysicsObjectTest {
 
     @Test
     public void initialisationTest(){
-        Vector pos = new Vector(5.6, 5.4);
-        PhysicsObject obj = new PhysicsObject(new MassData(0,0), Material.SOLID, new Circle(new Vector(5.6, 5.4), 5));
+        Vector pos = new Vector(5.6f, 5.4f);
+        PhysicsObject obj = new PhysicsObject(new MassData(0,0), Material.SOLID, new Circle(new Vector(5.6f, 5.4f), 5));
         Assert.assertTrue(obj.getPosition().equals(pos));
         assertEquals(obj.getMassData(), new MassData(0, 0));
         assertEquals(obj.getMaterial(), Material.SOLID);
-        assertEquals(obj.getShape(), new Circle(new Vector(5.6, 5.4), 5));
+        assertEquals(obj.getShape(), new Circle(new Vector(5.6f, 5.4f), 5));
     }
 
     @Test
     public void applyImpulseTest(){
-        PhysicsObject object = new PhysicsObject(new MassData(2, 3), Material.SOLID, new Circle(new Vector(3.4, 2.2), 4));
+        PhysicsObject object = new PhysicsObject(new MassData(2, 3), Material.SOLID, new Circle(new Vector(3.4f, 2.2f), 4));
         Vector impulse = new Vector(5, 5);
         assertEquals(object.getVelocity(), new Vector(0, 0));
         object.applyImpulse(impulse);
-        Vector newVelocity = new Vector(2.5, 2.5);
+        Vector newVelocity = new Vector(2.5f, 2.5f);
         assertEquals(object.getVelocity(), newVelocity);
     }
 
@@ -55,7 +54,7 @@ public class PhysicsObjectTest {
         object.update();
         force = force.plus((Constants.gravity.multiply(Constants.gravityScale)).multiply(Constants.delta));
 
-        Vector newVelocity = force.multiply(1.0/3.0).multiply(Constants.delta);
+        Vector newVelocity = force.multiply(1.0f/3.0f).multiply(Constants.delta);
         Vector positionChange = newVelocity.multiply(Constants.delta);
 
         assertEquals(object.getVelocity(), newVelocity);

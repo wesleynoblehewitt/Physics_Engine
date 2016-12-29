@@ -4,9 +4,7 @@ import Physics.Mathematics.*;
 import Physics.Objects.*;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CollisionCheckerTest {
 
@@ -43,7 +41,7 @@ public class CollisionCheckerTest {
 
         //worked example
         assertEquals(info.getPenetrationDepth(), 3.18975032409, Constants.epsilon);
-        assertEquals(info.getCollisionNormal(), new Vector(0.64018439966, 0.76822127959));
+        assertEquals(info.getCollisionNormal(), new Vector(0.64018439966f, 0.76822127959f));
     }
 
     @Test
@@ -56,7 +54,7 @@ public class CollisionCheckerTest {
         assertFalse(collisionChecker.CircleVsCircleCheck(info));
 
         //min distance check
-        info.getObjectB().setPosition(new Vector(5.1, 0));
+        info.getObjectB().setPosition(new Vector(5.1f, 0));
         assertFalse(collisionChecker.CircleVsCircleCheck(info));
     }
 
@@ -96,13 +94,13 @@ public class CollisionCheckerTest {
         assertEquals(info.getCollisionNormal(), new Vector(0, -1));
 
         info.getObjectA().setPosition(new Vector(0, 0));
-        info.getObjectB().setPosition(new Vector(0.5, 0));
+        info.getObjectB().setPosition(new Vector(0.5f, 0));
 
         assertTrue(collisionChecker.SquareVsSquareCheck(info));
         assertEquals(info.getPenetrationDepth(), 3, Constants.epsilon);
         assertEquals(info.getCollisionNormal(), new Vector(0, 1));
 
-        info.getObjectB().setPosition(new Vector(-0.5, 0));
+        info.getObjectB().setPosition(new Vector(-0.5f, 0));
 
         assertTrue(collisionChecker.SquareVsSquareCheck(info));
         assertEquals(info.getPenetrationDepth(), 3, Constants.epsilon);
@@ -139,7 +137,7 @@ public class CollisionCheckerTest {
 
         assertTrue(collisionChecker.SquareVsCircleCheck(info));
         assertEquals(info.getPenetrationDepth(), 1.5857864376269049, Constants.epsilon);
-        assertEquals(info.getCollisionNormal(), new Vector(0.7071067811, 0.7071067811));
+        assertEquals(info.getCollisionNormal(), new Vector(0.7071067811f, 0.7071067811f));
     }
 
     @Test
@@ -151,7 +149,7 @@ public class CollisionCheckerTest {
 
         assertFalse(collisionChecker.SquareVsCircleCheck(info));
 
-        info.getObjectB().setPosition(new Vector(6.1, 0));
+        info.getObjectB().setPosition(new Vector(6.1f, 0));
         assertFalse(collisionChecker.SquareVsCircleCheck(info));
     }
 }

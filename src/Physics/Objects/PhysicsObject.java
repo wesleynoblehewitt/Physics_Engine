@@ -5,10 +5,7 @@ import Physics.Mathematics.MassData;
 import Physics.Mathematics.Vector;
 import com.sun.istack.internal.NotNull;
 import javafx.scene.transform.Transform;
-
-import java.awt.*;
-
-//import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Graphics;
 
 public class PhysicsObject {
 

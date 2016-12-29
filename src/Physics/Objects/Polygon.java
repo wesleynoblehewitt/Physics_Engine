@@ -149,9 +149,9 @@ public class Polygon extends ObjectShape {
     @Override
     void render(Graphics g) {
         org.newdawn.slick.geom.Polygon poly = new org.newdawn.slick.geom.Polygon();
-        for(Vector v : vertices){
-//            poly.addPoint(v.getX(), v.getY());
-        }
+        for(Vector v : vertices)
+            poly.addPoint(v.getX(), v.getY());
+
         g.fill(poly);
     }
 

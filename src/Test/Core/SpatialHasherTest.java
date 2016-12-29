@@ -23,11 +23,11 @@ public class SpatialHasherTest {
     @Test
     public void hasherSetupTest(){
         SpatialHasher setupHasher = new SpatialHasher();
-        double width = Constants.worldDimensions.getWidth();
-        double height = Constants.worldDimensions.getHeight();
+        int width = Constants.worldDimensions.width;
+        int height = Constants.worldDimensions.height;
 
-        int columns = (int) width/30;
-        int rows = (int) height/30;
+        int columns = width/30;
+        int rows = height/30;
 
         assertEquals(setupHasher.getBuckets().size(), columns * rows);
     }

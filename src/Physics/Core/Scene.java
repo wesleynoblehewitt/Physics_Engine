@@ -4,9 +4,8 @@ import Physics.Mathematics.*;
 import Physics.Objects.Material;
 import Physics.Objects.PhysicsObject;
 import Physics.Objects.Square;
+import org.newdawn.slick.Graphics;
 
-
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +29,7 @@ class Scene {
         addObject(ball);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void addObject(PhysicsObject object){
         objects.add(object);
     }
@@ -59,7 +59,7 @@ class Scene {
         }
     }
 
-    void render(Graphics g, float alpha){
+    void render(Graphics g){
         for(PhysicsObject object: objects){
             object.render(g);
         }

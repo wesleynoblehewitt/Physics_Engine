@@ -27,7 +27,7 @@ public class Circle extends ObjectShape{
 
     @Override
     void render(Graphics g) {
-//        g.fillOval((int) (position.getX() - radius), (int) (position.getY() - radius), (int) (radius * 2), (int) (radius * 2));
+        g.fillOval((position.getX() - radius), (position.getY() - radius), (radius * 2), (radius * 2));
     }
 
     @Override

@@ -34,7 +34,7 @@ public class Square extends ObjectShape {
 
     @Override
     void render(Graphics g) {
-        g.fillRect((int) (position.getX() - width/2), (int) (position.getY() - height/2), (int) width, (int) height);
+        g.fillRect((position.getX() - width/2), (position.getY() - height/2), width, height);
     }
 
     @Override

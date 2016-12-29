@@ -58,7 +58,7 @@ public class SpatialHasher {
         Vector max = obj.getBoundingBoxMax();
 
         Vector range = max.minus(min);
-        double width = screenWidth/cellSize;
+        float width = screenWidth/cellSize;
 
         int jumpi = 1;
         int jumpj = 1;
@@ -85,7 +85,7 @@ public class SpatialHasher {
                 && y <= screenHeight && y >= 0;
     }
 
-    private void addBucket(Vector location, double width, List<Integer> cells){
+    private void addBucket(Vector location, float width, List<Integer> cells){
         int cellPosition = (int)(
                 (Math.floor(location.getX()/cellSize))
                 + (Math.floor(location.getY()/cellSize))
@@ -107,7 +107,7 @@ public class SpatialHasher {
         return nearbyObjects;
     }
 
-    public List<CollisionInfo> findPossibleObjectCollisions(List<PhysicsObject> objects){
+    List<CollisionInfo> findPossibleObjectCollisions(List<PhysicsObject> objects){
         Set<CollisionInfo> possibleCollisions = new HashSet<>();
 
         clearBuckets();

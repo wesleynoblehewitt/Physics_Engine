@@ -1,9 +1,15 @@
 package Physics.Core;
 
+import org.newdawn.slick.SlickException;
+
 public class Main {
 
     public static void main(String[] args){
-        Game game = new Game("Project Peace");
-        game.run();
+        try {
+            Game game = new Game(new GameRunner("Project Peace"));
+            game.start();
+        } catch (SlickException e) {
+            e.printStackTrace();
+        }
     }
 }

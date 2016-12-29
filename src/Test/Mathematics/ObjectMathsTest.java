@@ -10,7 +10,6 @@ import Physics.Objects.PhysicsObject;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class ObjectMathsTest {
@@ -37,7 +36,7 @@ public class ObjectMathsTest {
         info.getObjectA().setVelocity(new Vector(5, 3));
         info.getObjectB().setVelocity(new Vector(2, 1));
         info.setCollisionNormal(new Vector(1, 0));
-        info.setPenetrationDepth(0.01);
+        info.setPenetrationDepth(0.01f);
 
         objectMaths.sinkingObjectsCorrection(info);
         assertEquals(info.getObjectA().getVelocity(), new Vector(5, 3));
@@ -50,11 +49,11 @@ public class ObjectMathsTest {
         info.getObjectA().setVelocity(new Vector(5, 3));
         info.getObjectB().setVelocity(new Vector(2, 1));
         info.setCollisionNormal(new Vector(1, 0));
-        info.setPenetrationDepth(1.0);
+        info.setPenetrationDepth(1);
 
         //Before correction - A (0, 0), B (2, 0)
         objectMaths.sinkingObjectsCorrection(info);
-        assertEquals(info.getObjectA().getPosition(), new Vector(-0.09899999999, 0));
-        assertEquals(info.getObjectB().getPosition(), new Vector(2.099, 0));
+        assertEquals(info.getObjectA().getPosition(), new Vector(-0.09899999999f, 0));
+        assertEquals(info.getObjectB().getPosition(), new Vector(2.099f, 0));
     }
 }

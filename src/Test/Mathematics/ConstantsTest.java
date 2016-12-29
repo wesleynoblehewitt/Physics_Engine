@@ -2,7 +2,7 @@ package Test.Mathematics;
 
 import org.junit.Test;
 
-import static Physics.Mathematics.Constants.doubleEquals;
+import static Physics.Mathematics.Constants.floatEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -10,8 +10,8 @@ public class ConstantsTest {
 
     @Test
     public void doubleEqualsTest(){
-        assertTrue(doubleEquals(5.0, 5.0));
-        assertFalse(doubleEquals(5.0001, 5.0002));
-        assertTrue(doubleEquals(5.00000001, 5.00000001));
+        assertTrue(floatEquals(5, 5));
+        assertFalse(floatEquals(5.0001f, 5.0002f));
+        assertTrue(floatEquals(5.00000001f, 5.00000001f));
     }
 }

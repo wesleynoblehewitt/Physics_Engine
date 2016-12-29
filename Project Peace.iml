@@ -18,15 +18,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="src" level="project" />
+    <orderEntry type="library" name="lwjgl-2.9.3" level="project" />
     <orderEntry type="library" name="slick" level="project" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/slick.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
   </component>
 </module>

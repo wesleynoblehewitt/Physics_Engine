@@ -4,10 +4,8 @@ import Physics.Mathematics.Vector;
 import Physics.Objects.Circle;
 import org.junit.Test;
 
-import static Physics.Mathematics.Constants.doubleEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static Physics.Mathematics.Constants.floatEquals;
+import static org.junit.Assert.*;
 
 public class CircleTest {
 
@@ -15,7 +13,7 @@ public class CircleTest {
     public void intialisationTest(){
         Circle circle = new Circle(new Vector(4, 8), 2);
         assertEquals(circle.getPosition(), new Vector(4, 8));
-        assertTrue(doubleEquals(circle.getRadius(), 2));
+        assertTrue(floatEquals(circle.getRadius(), 2));
     }
 
     @Test
