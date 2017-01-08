@@ -4,12 +4,16 @@ import Physics.Objects.PhysicsObject;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CollisionInfo {
 
     private PhysicsObject objectA;
     private PhysicsObject objectB;
     @Nullable private Vector collisionNormal;
     private float penetrationDepth = 0;
+    private List<Vector> contactPoints = new ArrayList<>();
 
     public CollisionInfo(@NotNull PhysicsObject objectA, @NotNull PhysicsObject objectB,
                          @NotNull Vector collisionNormal, @NotNull float penetrationDepth){
@@ -58,6 +62,18 @@ public class CollisionInfo {
         return penetrationDepth;
     }
 
+    public void addContactPoint(int index, Vector contactPoint) {
+        contactPoints.add(index, contactPoint);
+    }
+
+    public List<Vector> getContactPoints(){
+        return contactPoints;
+    }
+
+    public int getNumberOfContactPoints() {
+        return contactPoints.size();
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -74,6 +90,8 @@ public class CollisionInfo {
             return false;
         if(!info.getCollisionNormal().equals(collisionNormal))
             return false;
+        if(!info.getContactPoints().equals(contactPoints))
+            return false;
         return Constants.floatEquals(info.getPenetrationDepth(), penetrationDepth);
     }
 
@@ -84,8 +102,11 @@ public class CollisionInfo {
         hashCode += collisionNormal != null ? collisionNormal.hashCode() : 0;
         hashCode += objectA.hashCode();
         hashCode += objectB.hashCode();
+        hashCode += contactPoints.hashCode();
 
         result = 31 * result + hashCode;
         return result;
     }
+
+
 }
