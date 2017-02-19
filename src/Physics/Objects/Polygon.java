@@ -18,6 +18,8 @@ public class Polygon extends ObjectShape {
     private float xExtent;
     private float yExtent;
 
+
+    //Vertices list indicates position of each vertices
     public Polygon(Vector position, List<Vector> vertices)  {
         super(position);
         vertexCount = vertices.size();
@@ -97,14 +99,18 @@ public class Polygon extends ObjectShape {
 
     private void calculateExtents(){
         float maxX = -Float.MAX_VALUE;
+        float minX = Float.MAX_VALUE;
         float maxY = -Float.MAX_VALUE;
+        float minY = Float.MAX_VALUE;
 
         for(Vector v : vertices){
-            maxX = Math.max(maxX, Math.abs(v.getX() - position.getX()));
-            maxY = Math.max(maxY, Math.abs(v.getY() - position.getY()));
+            maxX = Math.max(maxX, v.getX());
+            minX = Math.min(minX, v.getX());
+            maxY = Math.max(maxY, v.getY());
+            minY = Math.min(minY, v.getY());
         }
-        xExtent = maxX;
-        yExtent = maxY;
+        xExtent = maxX - minX;
+        yExtent = maxY - minY;
     }
 
     @Nullable

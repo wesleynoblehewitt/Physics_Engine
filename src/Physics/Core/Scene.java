@@ -1,9 +1,10 @@
 package Physics.Core;
 
 import Physics.Mathematics.*;
+import Physics.Objects.Circle;
 import Physics.Objects.Material;
 import Physics.Objects.PhysicsObject;
-import Physics.Objects.Square;
+import Physics.Objects.Polygon;
 import org.newdawn.slick.Graphics;
 
 import java.util.ArrayList;
@@ -22,10 +23,24 @@ class Scene {
     }
 
     private void initiateObjects(){
-        PhysicsObject object = new PhysicsObject(new MassData(0, 0), Material.SOLID, new Square(new Vector(500, 450), 400, 40));
+        List<Vector> vertices = new ArrayList<>();
+        vertices.add(new Vector(600, 470));
+        vertices.add(new Vector(600, 430));
+        vertices.add(new Vector(400, 470));
+        vertices.add(new Vector(400, 430));
+
+        PhysicsObject object = new PhysicsObject(new MassData(0, 0), Material.SOLID, new Polygon(new Vector(500, 450), vertices));
         addObject(object);
 
-        PhysicsObject ball = new PhysicsObject(new MassData(20, 5), Material.SOLID, new Square(new Vector(500, 50), 30, 30));
+        vertices.clear();
+        vertices.add(new Vector(310, 110));
+        vertices.add(new Vector(310, 90));
+        vertices.add(new Vector(490, 110));
+        vertices.add(new Vector(490, 90));
+        PhysicsObject polygon = new PhysicsObject(new MassData(20, 5), Material.SOLID, new Polygon(new Vector(300, 100), vertices));
+//        addObject(polygon);
+
+        PhysicsObject ball = new PhysicsObject(new MassData(20, 5), Material.SOLID, new Circle(new Vector(500, 50), 10));
         addObject(ball);
     }
 

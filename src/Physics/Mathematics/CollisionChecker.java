@@ -1,11 +1,10 @@
 package Physics.Mathematics;
 
 import Physics.Objects.*;
-import com.sun.istack.internal.Nullable;
 
 import java.util.List;
 
-import static Physics.Mathematics.Constants.floatEquals;
+import static Physics.Mathematics.Constants.*;
 
 public class CollisionChecker {
 
@@ -36,7 +35,11 @@ public class CollisionChecker {
                 info.setObjectA(polygon);
                 info.setObjectB(circle);
 
-                return CircleVsPolygonCheck(info);
+                boolean result = CircleVsPolygonCheck(info);
+
+                info.setObjectA(circle);
+                info.setObjectB(polygon);
+                return result;
             } else if(shapeB instanceof Circle){
                 return CircleVsCircleCheck(info);
             } else {
@@ -180,39 +183,39 @@ public class CollisionChecker {
         return true;
     }
 
-    public boolean CircleVsPolygonCheck(CollisionInfo info){
+    private boolean CircleVsPolygonCheck(CollisionInfo info){
         PhysicsObject a = info.getObjectA();
         PhysicsObject b = info.getObjectB();
 
-        Circle circle = (Circle) a.getShape();
-        Polygon polygon = (Polygon) b.getShape();
-        Vector vectorFromAToB = polygon.getPosition().minus(circle.getPosition());
+        Polygon polygon = (Polygon) a.getShape();
+        Circle circle = (Circle) b.getShape();
+        Vector vectorFromAToB = polygon.getRotationalMatrix().multiply(circle.getPosition().minus(polygon.getPosition()));
 
-        FaceQueryResults edgeOfMinPenetration = findEdgeOfMinimumPenetration(polygon, circle, vectorFromAToB);
+        FaceQueryResults edgeOfMinPenetration = findAxisOfMinimumPenetration(polygon, circle, vectorFromAToB);
         if(edgeOfMinPenetration == null)
             return false;
 
         // Circle is fully within Polygon
-        if(edgeOfMinPenetration.separation < Constants.epsilon){
+        if(edgeOfMinPenetration.separation < Constants.epsilon) {
             calculateCircleInPolygonCollision(info, polygon, circle, edgeOfMinPenetration);
             return true;
         }
 
         // Circle is partially colliding
-        return calculateCirclePartillyInPolygonCollision(info, polygon, circle, edgeOfMinPenetration, vectorFromAToB);
+        return calculateCirclePartiallyInPolygonCollision(info, polygon, circle, edgeOfMinPenetration, vectorFromAToB);
     }
 
-    @Nullable
-    private FaceQueryResults findEdgeOfMinimumPenetration(Polygon polygon, Circle circle, Vector vectorFromAtoB){
+    private FaceQueryResults findAxisOfMinimumPenetration(Polygon polygon, Circle circle, Vector vectorFromAtoB){
         float separation = -Float.MAX_VALUE;
         int index = 0;
         List<Vector> vertices = polygon.getVertices();
         List<Vector> normals = polygon.getVerticesNormals();
+        Vector position = polygon.getPosition();
         float radius = circle.getRadius();
 
-
         for(int i = 0; i < vertices.size(); i++){
-            float s = Vector.dotProduct(normals.get(i), vectorFromAtoB.minus(vertices.get(i)));
+            float s = Vector.dotProduct(normals.get(i), vectorFromAtoB.minus(vertices.get(i).minus(position)));
+
             if(s > radius)
                 return null;
             if(s > separation) {
@@ -225,17 +228,18 @@ public class CollisionChecker {
 
     private void calculateCircleInPolygonCollision(CollisionInfo info, Polygon polygon, Circle circle, FaceQueryResults edgeOfMinPenetration){
         info.setPenetrationDepth(circle.getRadius());
-        Vector normal = polygon.getVerticesNormals().get(edgeOfMinPenetration.index);
+        Vector normal = polygon.getRotationalMatrix().multiply(polygon.getVerticesNormals().get(edgeOfMinPenetration.index));
         info.setCollisionNormal(normal.inverse());
-        info.addContactPoint(0, normal.multiply(circle.getRadius()).plus(circle.getPosition()));
+        info.addContactPoint(0, info.getCollisionNormal().multiply(circle.getRadius()).plus(circle.getPosition()));
     }
 
-    private boolean calculateCirclePartillyInPolygonCollision(CollisionInfo info, Polygon polygon, Circle circle, FaceQueryResults edgeOfMinPenetration, Vector vectorFromAtoB){
+    private boolean calculateCirclePartiallyInPolygonCollision(CollisionInfo info, Polygon polygon, Circle circle, FaceQueryResults edgeOfMinPenetration, Vector vectorFromAtoB) {
         List<Vector> vertices = polygon.getVertices();
         float radius = circle.getRadius();
+        Vector polygonPosition= polygon.getPosition();
 
-        Vector v1 = vertices.get(edgeOfMinPenetration.index);
-        Vector v2 = vertices.get(edgeOfMinPenetration.index + 1 < vertices.size() ? edgeOfMinPenetration.index + 1 : 0);
+        Vector v1 = vertices.get(edgeOfMinPenetration.index).minus(polygonPosition);
+        Vector v2 = vertices.get(edgeOfMinPenetration.index + 1 < vertices.size() ? edgeOfMinPenetration.index + 1 : 0).minus(polygonPosition);
         info.setPenetrationDepth(circle.getRadius() - edgeOfMinPenetration.separation);
 
         float dot = Vector.dotProduct(vectorFromAtoB.minus(v1), v2.minus(v1));
@@ -266,51 +270,155 @@ public class CollisionChecker {
         return true;
     }
 
-    public boolean PolygonVsSquareCheck(CollisionInfo info){
+    private boolean PolygonVsSquareCheck(CollisionInfo info){
      return false;
     }
 
-    public boolean PolygonVsPolygonCheck(CollisionInfo info){
-        PhysicsObject a = info.getObjectA();
-        PhysicsObject b = info.getObjectB();
-
-        Polygon polygonA = (Polygon) a.getShape();
-        Polygon polygonB = (Polygon) b.getShape();
+    private boolean PolygonVsPolygonCheck(CollisionInfo info){
+        Polygon polygonA = (Polygon) info.getObjectA().getShape();
+        Polygon polygonB = (Polygon) info.getObjectB().getShape();
 
         FaceQueryResults queryA = findAxisOfMinimumPenetration(polygonA, polygonB);
-        if(queryA.separation > 0.0f)
-            return false;
+        if(queryA.separation > 0.0f) return false;
 
         FaceQueryResults queryB = findAxisOfMinimumPenetration(polygonB, polygonA);
-        if(queryB.separation > 0.0f)
-            return false;
+        if(queryB.separation > 0.0f) return false;
 
         // Calculate penetration depth, collision normal
+
+        boolean queryAisSmaller = queryA.separation < (queryB.separation * relative_bias + queryA.separation * absolute_bias);
+        int referenceFaceIndex = queryAisSmaller ? queryB.index : queryA.index;
+        Polygon referencePolygon = queryAisSmaller ? polygonB : polygonA;
+        Polygon incidentPolygon = queryAisSmaller ? polygonA : polygonB;
+
+        VectorPair incidentFace = findIncidentFace(referencePolygon, incidentPolygon, referenceFaceIndex);
+
+        // get reference face vertices
+        List<Vector> referencePolygonVertices = referencePolygon.getVertices();
+        Vector referenceFaceVector1 = referencePolygonVertices.get(referenceFaceIndex);
+        Vector referenceFaceVector2 = referenceFaceIndex + 1 >= referencePolygonVertices.size() ? referencePolygonVertices.get(0) : referencePolygonVertices.get(referenceFaceIndex + 1);
+
+        // transform vertices to world space
+        RotationalMatrix referenceMatrix = referencePolygon.getRotationalMatrix();
+        referenceFaceVector1 = referenceMatrix.multiply(referenceFaceVector1);
+        referenceFaceVector2 = referenceMatrix.multiply(referenceFaceVector2);
+
+        // calculate reference face side normals
+        Vector sideNormal = (referenceFaceVector2.minus(referenceFaceVector1)).normalize();
+
+        // orthogonize side normals
+        Vector referenceFaceNormal = new Vector(sideNormal.getY(), -sideNormal.getX());
+
+        // clip
+        float negSide = -Vector.dotProduct(sideNormal, referenceFaceVector1);
+        float posSide = Vector.dotProduct(sideNormal, referenceFaceVector2);
+
+
+        if (clip(incidentFace, sideNormal.inverse(), negSide) < 2) return false;
+        if (clip(incidentFace, sideNormal, posSide) < 2) return false;
+
+        // calculate c
+        float referenceC = Vector.dotProduct(referenceFaceNormal, referenceFaceVector1);
+
+        // flip
+        info.setCollisionNormal(queryAisSmaller ? referenceFaceNormal.inverse() : referenceFaceNormal);
+
+        // calculate penetration depth
+        int cp = 0;
+        float separation = Vector.dotProduct(referenceFaceNormal, incidentFace.vectorA) - referenceC;
+        float penetrationDepth = 0;
+        if(separation <= 0.0f){
+            info.addContactPoint(cp++, incidentFace.vectorA);
+            penetrationDepth -= -separation;
+        }
+
+        separation = Vector.dotProduct(referenceFaceNormal, incidentFace.vectorB) - referenceC;
+        if(separation <= 0.0f){
+            info.addContactPoint(cp++, incidentFace.vectorB);
+            penetrationDepth -= separation;
+        }
+
+        penetrationDepth /= cp;
+        info.setPenetrationDepth(penetrationDepth);
 
         return true;
     }
 
-    private FaceQueryResults findAxisOfMinimumPenetration(Polygon polygonA, Polygon polygonB){
+    private FaceQueryResults findAxisOfMinimumPenetration(Polygon polygonA, Polygon polygonB)   {
         List<Vector> verticesA = polygonA.getVertices();
         List<Vector> normalsA = polygonA.getVerticesNormals();
 
         float bestDistance = -Float.MAX_VALUE;
         int bestIndex = 0;
 
-        for(int i = 0; i < verticesA.size(); i++){
+        for(int i = 0; i < verticesA.size(); i++) {
             Vector normal = normalsA.get(i);
-            Vector supportVector = polygonB.getSupportVector(normal);
-            float distance = verticesA.get(i).distanceBetween(supportVector);
+            Vector supportVector = polygonB.getSupportVector(normal.inverse());
+            float distance = Vector.dotProduct(normal, supportVector.minus(verticesA.get(i)));
 
-            if(distance > bestDistance){
+            if (distance > bestDistance) {
                 bestDistance = distance;
                 bestIndex = i;
             }
 
-            return new FaceQueryResults(bestDistance, bestIndex);
         }
-        return new FaceQueryResults(0,0);
+        return new FaceQueryResults(bestDistance, bestIndex);
     }
+
+    private VectorPair findIncidentFace(Polygon referencePolygon, Polygon incidentPolygon, int referenceFaceIndex){
+        Vector referenceNormal = referencePolygon.getVerticesNormals().get(referenceFaceIndex);
+        referenceNormal = referencePolygon.getRotationalMatrix().multiply(referenceNormal);
+
+        RotationalMatrix incidentMatrix = incidentPolygon.getRotationalMatrix();
+        referenceNormal = incidentMatrix.transpose().multiply(referenceNormal);
+
+        int incidentFace = 0;
+        float minDot = Float.MAX_VALUE;
+        List<Vector> incidentNormals = incidentPolygon.getVerticesNormals();
+        for(int i = 0; i < incidentNormals.size(); i++){
+            float dot = Vector.dotProduct(referenceNormal, incidentNormals.get(i));
+            if (dot < minDot) {
+                minDot = dot;
+                incidentFace = i;
+            }
+        }
+
+        List<Vector> incidentVertices = incidentPolygon.getVertices();
+        Vector edge1 = incidentMatrix.multiply(incidentVertices.get(incidentFace));
+        incidentFace = incidentFace + 1 >= incidentVertices.size() ? 0 : incidentFace + 1;
+        Vector edge2 = incidentMatrix.multiply(incidentVertices.get(incidentFace));
+
+        return new VectorPair(edge1, edge2);
+    }
+
+    private int clip(VectorPair incidentFace, Vector normal, float c){
+        int sp = 0;
+        float distanceToNormalA = Vector.dotProduct(normal, incidentFace.vectorA) - c;
+        float distanceToNormalB = Vector.dotProduct(normal, incidentFace.vectorB) - c;
+
+        Vector[] out = { incidentFace.vectorA, incidentFace.vectorB };
+
+        if(distanceToNormalA <= 0.0f){
+            out[sp++] = incidentFace.vectorA;
+        }
+        if(distanceToNormalB <= 0.0f){
+            out[sp++] = incidentFace.vectorB;
+        }
+
+        if(distanceToNormalA * distanceToNormalB < 0.0f){
+            float alpha = distanceToNormalA / (distanceToNormalA - distanceToNormalB);
+            out[sp] = incidentFace.vectorA.plus(((incidentFace.vectorB.minus(incidentFace.vectorA)).multiply(alpha)));
+            ++sp;
+        }
+
+        incidentFace.vectorA = out[0];
+        incidentFace.vectorB = out[1];
+
+        assert(sp != 3);
+
+        return sp;
+    }
+
 
     private float clamp(float lower, float higher, float current){
         if(current > higher)
@@ -329,6 +437,16 @@ public class CollisionChecker {
         FaceQueryResults(float separation, int index){
             this.separation = separation;
             this.index = index;
+        }
+    }
+
+    private class VectorPair {
+        Vector vectorA;
+        Vector vectorB;
+
+        VectorPair(Vector vectorA, Vector vectorB){
+            this.vectorA = vectorA;
+            this.vectorB = vectorB;
         }
     }
 }
