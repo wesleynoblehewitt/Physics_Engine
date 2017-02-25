@@ -189,7 +189,8 @@ public class CollisionChecker {
 
         Polygon polygon = (Polygon) a.getShape();
         Circle circle = (Circle) b.getShape();
-        Vector vectorFromAToB = polygon.getRotationalMatrix().multiply(circle.getPosition().minus(polygon.getPosition()));
+
+        Vector vectorFromAToB = polygon.getRotationalMatrix().transpose().multiply(circle.getPosition().minus(polygon.getPosition()));
 
         FaceQueryResults edgeOfMinPenetration = findAxisOfMinimumPenetration(polygon, circle, vectorFromAToB);
         if(edgeOfMinPenetration == null)
@@ -228,7 +229,7 @@ public class CollisionChecker {
 
     private void calculateCircleInPolygonCollision(CollisionInfo info, Polygon polygon, Circle circle, FaceQueryResults edgeOfMinPenetration){
         info.setPenetrationDepth(circle.getRadius());
-        Vector normal = polygon.getRotationalMatrix().multiply(polygon.getVerticesNormals().get(edgeOfMinPenetration.index));
+        Vector normal = polygon.getRotationalMatrix().multiply((polygon.getVerticesNormals().get(edgeOfMinPenetration.index)));
         info.setCollisionNormal(normal.inverse());
         info.addContactPoint(0, info.getCollisionNormal().multiply(circle.getRadius()).plus(circle.getPosition()));
     }
@@ -246,8 +247,8 @@ public class CollisionChecker {
         if(dot < 0.0f || floatEquals(dot, 0.0f)){
             if(vectorFromAtoB.squareDistanceBetween(v1) > radius * radius)
                 return false;
-            info.setCollisionNormal(v1.minus(vectorFromAtoB).normalize());
-            info.addContactPoint(0, v1.plus(polygon.getPosition()));
+            info.setCollisionNormal(polygon.getRotationalMatrix().multiply(v1.minus(vectorFromAtoB)).normalize());
+            info.addContactPoint(0, polygon.getRotationalMatrix().multiply(v1).plus(polygon.getPosition()));
             return true;
         }
 
@@ -256,8 +257,8 @@ public class CollisionChecker {
             if(vectorFromAtoB.squareDistanceBetween(v2) > radius * radius)
                 return false;
 
-            info.setCollisionNormal(v2.minus(vectorFromAtoB).normalize());
-            info.addContactPoint(0, v2.plus(polygon.getPosition()));
+            info.setCollisionNormal(polygon.getRotationalMatrix().multiply(v2.minus(vectorFromAtoB)).normalize());
+            info.addContactPoint(0, polygon.getRotationalMatrix().multiply(v2).plus(polygon.getPosition()));
             return true;
         }
 
@@ -265,7 +266,7 @@ public class CollisionChecker {
         if(Vector.dotProduct(vectorFromAtoB.minus(v1), normal) > radius)
             return false;
 
-        info.setCollisionNormal(normal.inverse());
+        info.setCollisionNormal(polygon.getRotationalMatrix().multiply(normal).inverse());
         info.addContactPoint(0, info.getCollisionNormal().multiply(radius).plus(circle.getPosition()));
         return true;
     }
@@ -348,13 +349,18 @@ public class CollisionChecker {
         List<Vector> verticesA = polygonA.getVertices();
         List<Vector> normalsA = polygonA.getVerticesNormals();
 
+        RotationalMatrix rotationalMatrixA = polygonA.getRotationalMatrix();
+        RotationalMatrix rotationalMatrixB = polygonB.getRotationalMatrix().transpose();
+
         float bestDistance = -Float.MAX_VALUE;
         int bestIndex = 0;
 
         for(int i = 0; i < verticesA.size(); i++) {
-            Vector normal = normalsA.get(i);
+            Vector normal = rotationalMatrixB.multiply(rotationalMatrixA.multiply(normalsA.get(i)));
             Vector supportVector = polygonB.getSupportVector(normal.inverse());
-            float distance = Vector.dotProduct(normal, supportVector.minus(verticesA.get(i)));
+            Vector v = rotationalMatrixB.multiply(rotationalMatrixA.multiply(verticesA.get(i)));
+
+            float distance = Vector.dotProduct(normal, supportVector.minus(v));
 
             if (distance > bestDistance) {
                 bestDistance = distance;

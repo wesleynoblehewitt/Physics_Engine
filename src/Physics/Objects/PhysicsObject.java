@@ -2,6 +2,7 @@ package Physics.Objects;
 
 import Physics.Mathematics.Constants;
 import Physics.Mathematics.MassData;
+import Physics.Mathematics.RotationalMatrix;
 import Physics.Mathematics.Vector;
 import com.sun.istack.internal.NotNull;
 import javafx.scene.transform.Transform;
@@ -10,8 +11,11 @@ import org.newdawn.slick.Graphics;
 public class PhysicsObject {
 
     private Vector velocity = new Vector(0, 0);
-
     private Vector force = new Vector(0, 0);
+
+    private float orientation = 0f;
+    private float angularVelocity = 0f;
+    private float torque = 0f;
 
     Transform transform;
 
@@ -34,6 +38,11 @@ public class PhysicsObject {
 
         // v += (1/m * F) * dt
         velocity = velocity.plus(force.multiply(massData.getInverseMass()).multiply(Constants.delta));
+
+//        angularVelocity += torque * (1.0f / mommentOfInertia) * Constants.delta;
+        orientation += Math.toRadians(angularVelocity * Constants.delta);
+
+        shape.setRotationalMatrix(new RotationalMatrix(orientation));
 
         // x += v * dt
         shape.updatePosition(velocity.multiply(Constants.delta));
@@ -92,6 +101,10 @@ public class PhysicsObject {
     public Vector getBoundingBoxMax(){
         return shape.getBoundingBoxMax();
     }
+
+    public float getOrientation() { return orientation; }
+
+    public float getAngularVelocity() { return angularVelocity; }
 
     public void render(Graphics g){
         shape.render(g);
