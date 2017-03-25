@@ -190,6 +190,7 @@ public class CollisionChecker {
         Polygon polygon = (Polygon) a.getShape();
         Circle circle = (Circle) b.getShape();
 
+        //Find vector between the objects rotated into the current world space
         Vector vectorFromAToB = polygon.getRotationalMatrix().transpose().multiply(circle.getPosition().minus(polygon.getPosition()));
 
         FaceQueryResults edgeOfMinPenetration = findAxisOfMinimumPenetration(polygon, circle, vectorFromAToB);

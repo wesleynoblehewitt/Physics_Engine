@@ -30,6 +30,7 @@ class Scene {
         vertices.add(new Vector(400, 430));
 
         PhysicsObject object = new PhysicsObject(new MassData(0, 0), Material.SOLID, new Polygon(new Vector(500, 450), vertices));
+//        object.setOrientation(90f);
         addObject(object);
 
         vertices.clear();
@@ -38,10 +39,10 @@ class Scene {
         vertices.add(new Vector(490, 110));
         vertices.add(new Vector(490, 90));
         PhysicsObject polygon = new PhysicsObject(new MassData(20, 5), Material.SOLID, new Polygon(new Vector(300, 100), vertices));
-//        addObject(polygon);
+        addObject(polygon);
 
-        PhysicsObject ball = new PhysicsObject(new MassData(20, 5), Material.SOLID, new Circle(new Vector(500, 50), 10));
-        addObject(ball);
+        PhysicsObject ball = new PhysicsObject(new MassData(50, 5), Material.SOLID, new Circle(new Vector(395, 50), 10));
+//        addObject(ball);
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -53,10 +54,11 @@ class Scene {
         objects.remove(object);
     }
 
-    void step(){
+    void step() {
+        objects.forEach(PhysicsObject::updateVelocity);
         List<CollisionInfo> possibleCollisions = broadPhase();
         narrowPhase(possibleCollisions);
-        objects.forEach(PhysicsObject::update);
+        objects.forEach(PhysicsObject::updatePosition);
     }
 
     private List<CollisionInfo> broadPhase(){

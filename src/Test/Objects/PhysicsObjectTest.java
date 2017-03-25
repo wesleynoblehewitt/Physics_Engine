@@ -28,8 +28,9 @@ public class PhysicsObjectTest {
     public void applyImpulseTest(){
         PhysicsObject object = new PhysicsObject(new MassData(2, 3), Material.SOLID, new Circle(new Vector(3.4f, 2.2f), 4));
         Vector impulse = new Vector(5, 5);
+        Vector contactPoint = new Vector(0, 0);
         assertEquals(object.getVelocity(), new Vector(0, 0));
-        object.applyImpulse(impulse);
+        object.applyImpulse(impulse, contactPoint);
         Vector newVelocity = new Vector(2.5f, 2.5f);
         assertEquals(object.getVelocity(), newVelocity);
     }
@@ -39,7 +40,7 @@ public class PhysicsObjectTest {
         PhysicsObject object = new PhysicsObject(new MassData(0, 0), Material.SOLID, new Circle(new Vector(2, 5), 3));
         object.applyForce(new Vector(5, 5));
         assertEquals(object.getVelocity(), new Vector(0, 0));
-        object.update();
+        object.updatePosition();
         assertEquals(object.getVelocity(), new Vector(0, 0));
     }
 
@@ -51,8 +52,9 @@ public class PhysicsObjectTest {
         assertEquals(object.getVelocity(), new Vector(0, 0));
         assertEquals(object.getPosition(), new Vector(3, 2));
 
-        object.update();
-        force = force.plus((Constants.gravity.multiply(Constants.gravityScale)).multiply(Constants.delta));
+        object.updateVelocity();
+        object.updatePosition();
+        force = force.plus(Constants.gravityForce.multiply(Constants.delta));
 
         Vector newVelocity = force.multiply(1.0f/3.0f).multiply(Constants.delta);
         Vector positionChange = newVelocity.multiply(Constants.delta);

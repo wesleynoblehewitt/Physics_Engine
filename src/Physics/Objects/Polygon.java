@@ -155,10 +155,23 @@ public class Polygon extends ObjectShape {
     @Override
     void render(Graphics g) {
         org.newdawn.slick.geom.Polygon poly = new org.newdawn.slick.geom.Polygon();
-        for(Vector v : vertices)
-            poly.addPoint(v.getX(), v.getY());
-
+        for(Vector v : vertices) {
+            Vector relativeVertices = v.minus(position);
+            Vector worldViewVertex = rotationalMatrix.multiply(relativeVertices);
+            worldViewVertex = worldViewVertex.plus(position);
+            poly.addPoint(worldViewVertex.getX(), worldViewVertex.getY());
+        }
         g.fill(poly);
+
+//        Polygon poly = new Polygon();
+//        for(int i = 0; i < points.size(); i++){
+//            Vectors pos = u.multiply(points.get(i));
+//            pos = pos.plus(position);
+//            poly.addPoint(pos.X(), pos.Y());
+//        }
+//            g.setColor(color);
+//            g.fill(poly);
+//        }
     }
 
     @Override

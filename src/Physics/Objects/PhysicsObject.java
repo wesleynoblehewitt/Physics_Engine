@@ -2,11 +2,13 @@ package Physics.Objects;
 
 import Physics.Mathematics.Constants;
 import Physics.Mathematics.MassData;
-import Physics.Mathematics.RotationalMatrix;
 import Physics.Mathematics.Vector;
 import com.sun.istack.internal.NotNull;
 import javafx.scene.transform.Transform;
 import org.newdawn.slick.Graphics;
+
+import static Physics.Mathematics.Constants.gravityForce;
+import static Physics.Mathematics.Vector.crossProduct;
 
 public class PhysicsObject {
 
@@ -29,25 +31,37 @@ public class PhysicsObject {
         this.material = material;
     }
 
-    public void update(){
+    public void updateVelocity() {
+        if(Constants.floatEquals(massData.getMass(), 0f))
+            return;
+
+        force = force.plus(gravityForce).multiply(Constants.delta / 2.0f);
+        Vector gravity =
+
+        // v += (1/m * F) * dt
+        velocity = velocity.plus(force.multiply(massData.getInverseMass()).multiply(Constants.delta / 2.0f));
+
+        angularVelocity += torque * (1.0f / massData.getInverseInertia()) * Constants.delta;
+    }
+
+    public void updatePosition(){
 
         if(Constants.floatEquals(massData.getMass(), 0f))
             return;
 
-        force = force.plus((Constants.gravity.multiply(Constants.gravityScale)).multiply(Constants.delta));
-
-        // v += (1/m * F) * dt
-        velocity = velocity.plus(force.multiply(massData.getInverseMass()).multiply(Constants.delta));
-
-//        angularVelocity += torque * (1.0f / mommentOfInertia) * Constants.delta;
-        orientation += Math.toRadians(angularVelocity * Constants.delta);
-
-        shape.setRotationalMatrix(new RotationalMatrix(orientation));
+        orientation += angularVelocity * Constants.delta;
+        shape.getRotationalMatrix().setRotation(orientation);
 
         // x += v * dt
         shape.updatePosition(velocity.multiply(Constants.delta));
 
+        updateVelocity();
         force = new Vector(0f, 0f);
+    }
+
+    public void setOrientation(float orientation) {
+        this.orientation = orientation;
+        shape.getRotationalMatrix().setRotation(orientation);
     }
 
     public void setPosition(Vector position) {
@@ -62,8 +76,9 @@ public class PhysicsObject {
         force = force.plus(additionalForce);
     }
 
-    public void applyImpulse(Vector impulse){
+    public void applyImpulse(Vector impulse, Vector contactPoint) {
         velocity = velocity.plus(impulse.multiply(massData.getInverseMass()));
+        angularVelocity += crossProduct(contactPoint, impulse) * massData.getInverseInertia();
     }
 
     @NotNull

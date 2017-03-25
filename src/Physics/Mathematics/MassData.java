@@ -5,17 +5,17 @@ import static Physics.Mathematics.Constants.floatEquals;
 
 public class MassData {
 
-    final float mass;
-    final float inverseMass;
-    final float inertia;
-    final float inverseInertia;
+    private final float mass;
+    private final float inverseMass;
+    private final float inertia;
+    private final float inverseInertia;
 
     public MassData(float mass, float inertia){
         this.mass = mass;
         this.inertia = inertia;
 
-        inverseMass = floatEquals(mass, 0)  ? 0 : 1/mass;
-        inverseInertia = floatEquals(inertia, 0) ? 0 : 1/inertia;
+        inverseMass = floatEquals(mass, 0)  ? 0 : 1.0f / mass;
+        inverseInertia = floatEquals(inertia, 0) ? 0 : 1.0f / inertia;
     }
 
     public float getMass(){

@@ -11,7 +11,7 @@ public class Vector {
         if(floatEquals(x, -0.0f))
             x = 0;
         if(floatEquals(y, -0.0f))
-            y =0;
+            y = 0;
         this.x = x;
         this.y = y;
     }

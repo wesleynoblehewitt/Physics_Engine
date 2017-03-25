@@ -7,7 +7,7 @@ import org.newdawn.slick.Graphics;
 public abstract class ObjectShape {
 
     Vector position;
-    private RotationalMatrix rotationalMatrix = new RotationalMatrix(0);
+    RotationalMatrix rotationalMatrix = new RotationalMatrix(0);
 
     ObjectShape(Vector position){
         this.position = position;

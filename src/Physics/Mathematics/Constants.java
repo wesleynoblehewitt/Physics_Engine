@@ -6,8 +6,10 @@ public class Constants {
 
     // Physics constants
     public final static float epsilon = 0.000001f;
-    public final static Vector gravity = new Vector(0, 9.807f);
-    public final static float gravityScale = 5f;
+    private final static Vector gravity = new Vector(0, 9.807f);
+    private final static float gravityScale = 5f;
+    public final static Vector gravityForce = gravity.multiply(gravityScale);
+
 
     // Game constants
     private final static int fps = 60;
