@@ -13,7 +13,7 @@ public abstract class ObjectShape {
         this.position = position;
     }
 
-    void updatePosition(Vector positionChange){
+    public void updatePosition(Vector positionChange){
         position = position.plus(positionChange);
     }
 

@@ -24,22 +24,24 @@ public class CollisionChecker {
             if(shapeB instanceof Polygon){
                 return PolygonVsPolygonCheck(info);
             } else if(shapeB instanceof Circle){
-                return CircleVsPolygonCheck(info);
+                PhysicsObject polygon = info.getObjectA();
+                PhysicsObject circle = info.getObjectB();
+                info.setObjectA(circle);
+                info.setObjectB(polygon);
+
+                boolean result = CircleVsPolygonCheck(info);
+
+                info.setObjectA(polygon);
+                info.setObjectB(circle);
+                if(result)
+                    info.setCollisionNormal(info.getCollisionNormal().inverse());
+                return result;
             } else {
                 return PolygonVsSquareCheck(info);
             }
         } else if(shapeA instanceof Circle){
             if(shapeB instanceof Polygon){
-                PhysicsObject circle = info.getObjectA();
-                PhysicsObject polygon = info.getObjectB();
-                info.setObjectA(polygon);
-                info.setObjectB(circle);
-
-                boolean result = CircleVsPolygonCheck(info);
-
-                info.setObjectA(circle);
-                info.setObjectB(polygon);
-                return result;
+                return CircleVsPolygonCheck(info);
             } else if(shapeB instanceof Circle){
                 return CircleVsCircleCheck(info);
             } else {
@@ -187,13 +189,14 @@ public class CollisionChecker {
         PhysicsObject a = info.getObjectA();
         PhysicsObject b = info.getObjectB();
 
-        Polygon polygon = (Polygon) a.getShape();
-        Circle circle = (Circle) b.getShape();
+        Circle circle = (Circle) a.getShape();
+        Polygon polygon = (Polygon) b.getShape();
 
         //Find vector between the objects rotated into the current world space
         Vector vectorFromAToB = polygon.getRotationalMatrix().transpose().multiply(circle.getPosition().minus(polygon.getPosition()));
 
         FaceQueryResults edgeOfMinPenetration = findAxisOfMinimumPenetration(polygon, circle, vectorFromAToB);
+
         if(edgeOfMinPenetration == null)
             return false;
 
@@ -238,7 +241,7 @@ public class CollisionChecker {
     private boolean calculateCirclePartiallyInPolygonCollision(CollisionInfo info, Polygon polygon, Circle circle, FaceQueryResults edgeOfMinPenetration, Vector vectorFromAtoB) {
         List<Vector> vertices = polygon.getVertices();
         float radius = circle.getRadius();
-        Vector polygonPosition= polygon.getPosition();
+        Vector polygonPosition = polygon.getPosition();
 
         Vector v1 = vertices.get(edgeOfMinPenetration.index).minus(polygonPosition);
         Vector v2 = vertices.get(edgeOfMinPenetration.index + 1 < vertices.size() ? edgeOfMinPenetration.index + 1 : 0).minus(polygonPosition);
@@ -249,7 +252,7 @@ public class CollisionChecker {
             if(vectorFromAtoB.squareDistanceBetween(v1) > radius * radius)
                 return false;
             info.setCollisionNormal(polygon.getRotationalMatrix().multiply(v1.minus(vectorFromAtoB)).normalize());
-            info.addContactPoint(0, polygon.getRotationalMatrix().multiply(v1).plus(polygon.getPosition()));
+            info.addContactPoint(0, polygon.getRotationalMatrix().multiply(v1).plus(polygonPosition));
             return true;
         }
 
@@ -259,7 +262,7 @@ public class CollisionChecker {
                 return false;
 
             info.setCollisionNormal(polygon.getRotationalMatrix().multiply(v2.minus(vectorFromAtoB)).normalize());
-            info.addContactPoint(0, polygon.getRotationalMatrix().multiply(v2).plus(polygon.getPosition()));
+            info.addContactPoint(0, polygon.getRotationalMatrix().multiply(v2).plus(polygonPosition));
             return true;
         }
 
@@ -297,13 +300,14 @@ public class CollisionChecker {
 
         // get reference face vertices
         List<Vector> referencePolygonVertices = referencePolygon.getVertices();
-        Vector referenceFaceVector1 = referencePolygonVertices.get(referenceFaceIndex);
+        Vector referenceFaceVector1 = referencePolygonVertices.get(referenceFaceIndex).minus(referencePolygon.getPosition());
         Vector referenceFaceVector2 = referenceFaceIndex + 1 >= referencePolygonVertices.size() ? referencePolygonVertices.get(0) : referencePolygonVertices.get(referenceFaceIndex + 1);
+        referenceFaceVector2 = referenceFaceVector2.minus(referencePolygon.getPosition());
 
         // transform vertices to world space
         RotationalMatrix referenceMatrix = referencePolygon.getRotationalMatrix();
-        referenceFaceVector1 = referenceMatrix.multiply(referenceFaceVector1);
-        referenceFaceVector2 = referenceMatrix.multiply(referenceFaceVector2);
+        referenceFaceVector1 = referenceMatrix.multiply(referenceFaceVector1).plus(referencePolygon.getPosition());
+        referenceFaceVector2 = referenceMatrix.multiply(referenceFaceVector2).plus(referencePolygon.getPosition());
 
         // calculate reference face side normals
         Vector sideNormal = (referenceFaceVector2.minus(referenceFaceVector1)).normalize();
@@ -331,7 +335,7 @@ public class CollisionChecker {
         float penetrationDepth = 0;
         if(separation <= 0.0f){
             info.addContactPoint(cp++, incidentFace.vectorA);
-            penetrationDepth -= -separation;
+            penetrationDepth = -separation;
         }
 
         separation = Vector.dotProduct(referenceFaceNormal, incidentFace.vectorB) - referenceC;
@@ -358,8 +362,16 @@ public class CollisionChecker {
 
         for(int i = 0; i < verticesA.size(); i++) {
             Vector normal = rotationalMatrixB.multiply(rotationalMatrixA.multiply(normalsA.get(i)));
-            Vector supportVector = polygonB.getSupportVector(normal.inverse());
-            Vector v = rotationalMatrixB.multiply(rotationalMatrixA.multiply(verticesA.get(i)));
+            Vector supportVector = polygonB.getSupportVector(normal.inverse(), polygonB.getPosition());
+//            v = points.get(i);
+//            v = Au.multiply(v).plus(Apos);
+//            v = v.minus(Bpos);
+//            v = Bu.multiply(v);
+
+            Vector v = verticesA.get(i).minus(polygonA.getPosition());
+            v = rotationalMatrixA.multiply(v).plus(polygonA.getPosition());
+            v = v.minus(polygonB.getPosition());
+            v = rotationalMatrixB.multiply(v);
 
             float distance = Vector.dotProduct(normal, supportVector.minus(v));
 
@@ -391,9 +403,9 @@ public class CollisionChecker {
         }
 
         List<Vector> incidentVertices = incidentPolygon.getVertices();
-        Vector edge1 = incidentMatrix.multiply(incidentVertices.get(incidentFace));
+        Vector edge1 = incidentMatrix.multiply(incidentVertices.get(incidentFace).minus(incidentPolygon.getPosition())).plus(incidentPolygon.getPosition());
         incidentFace = incidentFace + 1 >= incidentVertices.size() ? 0 : incidentFace + 1;
-        Vector edge2 = incidentMatrix.multiply(incidentVertices.get(incidentFace));
+        Vector edge2 = incidentMatrix.multiply(incidentVertices.get(incidentFace).minus(incidentPolygon.getPosition())).plus(incidentPolygon.getPosition());
 
         return new VectorPair(edge1, edge2);
     }
@@ -425,7 +437,6 @@ public class CollisionChecker {
 
         return sp;
     }
-
 
     private float clamp(float lower, float higher, float current){
         if(current > higher)

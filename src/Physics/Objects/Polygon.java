@@ -114,11 +114,11 @@ public class Polygon extends ObjectShape {
     }
 
     @Nullable
-    public Vector getSupportVector(Vector direction){
+    public Vector getSupportVector(Vector direction, Vector position){
         Vector bestVertex = null;
         float bestProjection = -Float.MAX_VALUE;
         for(int i = 0; i < vertexCount; i++){
-            Vector vertex = vertices.get(i);
+            Vector vertex = vertices.get(i).minus(position);
             float projection = Vector.dotProduct(vertex, direction);
             if(projection > bestProjection){
                 bestProjection = projection;
@@ -129,7 +129,7 @@ public class Polygon extends ObjectShape {
     }
 
     @Override
-    void updatePosition(Vector positionChange){
+    public void updatePosition(Vector positionChange){
         position = position.plus(positionChange);
         ListIterator<Vector> iterator = vertices.listIterator();
         while(iterator.hasNext()){
@@ -162,16 +162,6 @@ public class Polygon extends ObjectShape {
             poly.addPoint(worldViewVertex.getX(), worldViewVertex.getY());
         }
         g.fill(poly);
-
-//        Polygon poly = new Polygon();
-//        for(int i = 0; i < points.size(); i++){
-//            Vectors pos = u.multiply(points.get(i));
-//            pos = pos.plus(position);
-//            poly.addPoint(pos.X(), pos.Y());
-//        }
-//            g.setColor(color);
-//            g.fill(poly);
-//        }
     }
 
     @Override

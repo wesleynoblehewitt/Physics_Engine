@@ -24,13 +24,12 @@ public class RotationalMatrix {
         this.m11 = m11;
     }
 
-    public void setRotation(float orientation) {
-        double radians = Math.toRadians(orientation);
-//        double radians = orientation;
+    public void setRotation(float radians) {
         float c = (float) Math.cos(radians);
         c = floatEquals(c, 0f) ? 0f : c;
         c = floatEquals(c, 1f) ? 1f : c;
         c = floatEquals(c, -1f) ? -1f : c;
+
         float s = (float) Math.sin(radians);
         s = floatEquals(s, 0) ? 0f : s;
         s = floatEquals(s, 1f) ? 1f : s;

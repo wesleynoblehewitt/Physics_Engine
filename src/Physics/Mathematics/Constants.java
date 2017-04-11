@@ -7,8 +7,11 @@ public class Constants {
     // Physics constants
     public final static float epsilon = 0.000001f;
     private final static Vector gravity = new Vector(0, 9.807f);
-    private final static float gravityScale = 5f;
+    private final static float gravityScale = 0.001f;
     public final static Vector gravityForce = gravity.multiply(gravityScale);
+    private final static float drag = 0.001f;
+    private final static float dragScale = 1.0f;
+    public final static float dragForce = drag * dragScale;
 
 
     // Game constants

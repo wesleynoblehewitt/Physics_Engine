@@ -14,8 +14,8 @@ public class MassData {
         this.mass = mass;
         this.inertia = inertia;
 
-        inverseMass = floatEquals(mass, 0)  ? 0 : 1.0f / mass;
-        inverseInertia = floatEquals(inertia, 0) ? 0 : 1.0f / inertia;
+        inverseMass = floatEquals(mass, 0f)  ? 0f : 1.0f / mass;
+        inverseInertia = floatEquals(inertia, 0f) ? 0f : 1.0f / inertia;
     }
 
     public float getMass(){

@@ -35,28 +35,31 @@ public class PhysicsObject {
         if(Constants.floatEquals(massData.getMass(), 0f))
             return;
 
-        force = force.plus(gravityForce).multiply(Constants.delta / 2.0f);
-        Vector gravity =
+        //velocity = velocity + (force * inverse_mass + gravity) * (dt/2)
+        //angular_velocity = angular_velocity + torque * inverse_inertia * dt//2
+        velocity = velocity.plus((force.multiply(massData.getInverseMass()).plus(gravityForce)).multiply(Constants.delta / 2.0f));
 
         // v += (1/m * F) * dt
-        velocity = velocity.plus(force.multiply(massData.getInverseMass()).multiply(Constants.delta / 2.0f));
+//        velocity = velocity.plus(force.multiply(massData.getInverseMass()).multiply(Constants.delta / 2.0f));
 
-        angularVelocity += torque * (1.0f / massData.getInverseInertia()) * Constants.delta;
+        angularVelocity += torque *  massData.getInverseInertia() * (Constants.delta / 2.0f);
+//        angularVelocity *= angularVelocity * Constants.dragForce;
+//
+//        if(angularVelocity > 10f)
+//            angularVelocity = 10f;
+//        if(angularVelocity < -10f)
+//            angularVelocity = -10f;
     }
 
     public void updatePosition(){
-
         if(Constants.floatEquals(massData.getMass(), 0f))
             return;
 
-        orientation += angularVelocity * Constants.delta;
-        shape.getRotationalMatrix().setRotation(orientation);
-
+        setOrientation(orientation + angularVelocity * Constants.delta);
         // x += v * dt
         shape.updatePosition(velocity.multiply(Constants.delta));
 
         updateVelocity();
-        force = new Vector(0f, 0f);
     }
 
     public void setOrientation(float orientation) {
@@ -79,6 +82,11 @@ public class PhysicsObject {
     public void applyImpulse(Vector impulse, Vector contactPoint) {
         velocity = velocity.plus(impulse.multiply(massData.getInverseMass()));
         angularVelocity += crossProduct(contactPoint, impulse) * massData.getInverseInertia();
+    }
+
+    public void resetForces() {
+        force = new Vector(0f, 0f);
+        torque = 0f;
     }
 
     @NotNull

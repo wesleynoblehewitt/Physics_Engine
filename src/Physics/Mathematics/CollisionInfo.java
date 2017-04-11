@@ -62,16 +62,12 @@ public class CollisionInfo {
         return penetrationDepth;
     }
 
-    public void addContactPoint(int index, Vector contactPoint) {
+    void addContactPoint(int index, Vector contactPoint) {
         contactPoints.add(index, contactPoint);
     }
 
-    public List<Vector> getContactPoints(){
+    List<Vector> getContactPoints(){
         return contactPoints;
-    }
-
-    public int getNumberOfContactPoints() {
-        return contactPoints.size();
     }
 
     @Override
@@ -84,25 +80,15 @@ public class CollisionInfo {
             return false;
 
         CollisionInfo info = (CollisionInfo) obj;
-        if(!info.getObjectA().equals(objectA))
-            return false;
-        if(!info.getObjectB().equals(objectB))
-            return false;
-        if(!info.getCollisionNormal().equals(collisionNormal))
-            return false;
-        if(!info.getContactPoints().equals(contactPoints))
-            return false;
-        return Constants.floatEquals(info.getPenetrationDepth(), penetrationDepth);
+        // A CollisionInfo is considered equal if they contain the two same objects, regardless of position
+        return info.getObjectA().equals(objectA) && info.getObjectB().equals(objectB) || info.getObjectA().equals(objectB) && info.getObjectB().equals(objectA);
     }
 
     @Override
     public int hashCode(){
         int result = 1;
-        int hashCode = Float.floatToIntBits(penetrationDepth);
-        hashCode += collisionNormal != null ? collisionNormal.hashCode() : 0;
-        hashCode += objectA.hashCode();
+        int hashCode = objectA.hashCode();
         hashCode += objectB.hashCode();
-        hashCode += contactPoints.hashCode();
 
         result = 31 * result + hashCode;
         return result;

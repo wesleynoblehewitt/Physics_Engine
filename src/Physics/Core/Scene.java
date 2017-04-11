@@ -30,22 +30,23 @@ class Scene {
         vertices.add(new Vector(400, 430));
 
         PhysicsObject object = new PhysicsObject(new MassData(0, 0), Material.SOLID, new Polygon(new Vector(500, 450), vertices));
-//        object.setOrientation(90f);
         addObject(object);
 
+        PhysicsObject ballSolid = new PhysicsObject(new MassData(0, 0), Material.SOLID, new Circle(new Vector(450, 450), 30));
+//        addObject(ballSolid);
+
         vertices.clear();
-        vertices.add(new Vector(310, 110));
-        vertices.add(new Vector(310, 90));
-        vertices.add(new Vector(490, 110));
-        vertices.add(new Vector(490, 90));
-        PhysicsObject polygon = new PhysicsObject(new MassData(20, 5), Material.SOLID, new Polygon(new Vector(300, 100), vertices));
+        vertices.add(new Vector(310, 210));
+        vertices.add(new Vector(310, 190));
+        vertices.add(new Vector(490, 210));
+        vertices.add(new Vector(490, 190));
+        PhysicsObject polygon = new PhysicsObject(new MassData(5, 15), Material.SOLID, new Polygon(new Vector(400, 200), vertices));
         addObject(polygon);
 
-        PhysicsObject ball = new PhysicsObject(new MassData(50, 5), Material.SOLID, new Circle(new Vector(395, 50), 10));
+        PhysicsObject ball = new PhysicsObject(new MassData(5, 5), Material.SOLID, new Circle(new Vector(475, 50), 10));
 //        addObject(ball);
     }
 
-    @SuppressWarnings("WeakerAccess")
     public void addObject(PhysicsObject object){
         objects.add(object);
     }
@@ -55,25 +56,36 @@ class Scene {
     }
 
     void step() {
-        objects.forEach(PhysicsObject::updateVelocity);
         List<CollisionInfo> possibleCollisions = broadPhase();
-        narrowPhase(possibleCollisions);
+        //Integrate forces
+        objects.forEach(PhysicsObject::updateVelocity);
+        //Solve collisions
+        List<CollisionInfo> collisions = narrowPhase(possibleCollisions);
+        //Integrate velocities
         objects.forEach(PhysicsObject::updatePosition);
+        //Correct positions
+        for(CollisionInfo collision : collisions)
+            objectMaths.sinkingObjectsCorrection(collision);
+        //Reset forces
+        objects.forEach(PhysicsObject::resetForces);
     }
 
     private List<CollisionInfo> broadPhase(){
         return broadPhaser.findPossibleObjectCollisions(objects);
     }
 
-    private void narrowPhase(List<CollisionInfo> possibleCollisions){
-        possibleCollisions.forEach(this::checkForCollision);
+    private List<CollisionInfo> narrowPhase(List<CollisionInfo> possibleCollisions){
+        List<CollisionInfo> collisions = new ArrayList<>();
+        for(CollisionInfo collision : possibleCollisions) {
+            CollisionInfo result = resolveCollisions(collision);
+            if(result != null)
+                collisions.add(result);
+        }
+        return collisions;
     }
 
-    private void checkForCollision(CollisionInfo collision) {
-        if(collisionChecker.checkCollision(collision)){
-            if(objectMaths.resolveCollision(collision) != null)
-                objectMaths.sinkingObjectsCorrection(collision);
-        }
+    private CollisionInfo resolveCollisions(CollisionInfo collision) {
+        return collisionChecker.checkCollision(collision) ? objectMaths.resolveCollision(collision) : null;
     }
 
     void render(Graphics g){
