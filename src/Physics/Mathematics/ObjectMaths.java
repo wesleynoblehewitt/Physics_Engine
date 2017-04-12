@@ -20,26 +20,29 @@ public class ObjectMaths {
         PhysicsObject a = collision.getObjectA();
         PhysicsObject b = collision.getObjectB();
         float e = Math.min(a.getRestitution(), b.getRestitution());
-        float massSum = a.getMassData().getMass() + b.getMassData().getMass();
         float contactPointCount = (float) collision.getContactPoints().size();
+
+        Vector velocityOfA = a.getVelocity();
+        float angularVelocityOfA = a.getAngularVelocity();
+        Vector velocityOfB = b.getVelocity();
+        float angularVelocityOfB = b.getAngularVelocity();
 
         for(Vector contactPoint : collision.getContactPoints()) {
             Vector radiusFromA = contactPoint.minus(a.getPosition());
             Vector radiusFromB = contactPoint.minus(b.getPosition());
 
-            Vector relativeVelocity = b.getVelocity().plus(Vector.crossProduct(b.getAngularVelocity(), radiusFromB))
-                    .minus(a.getVelocity()).minus(Vector.crossProduct(a.getAngularVelocity(),radiusFromA));
+            Vector relativeVelocity = velocityOfB.plus(Vector.crossProduct(angularVelocityOfB, radiusFromB))
+                    .minus(velocityOfA).minus(Vector.crossProduct(angularVelocityOfA, radiusFromA));
 
             float contactVelocity = Vector.dotProduct(relativeVelocity, collision.getCollisionNormal());
 
             if(contactVelocity > 0)
-                continue;
+                break;
 
             float aCrossNormal = Vector.crossProduct(radiusFromA, collision.getCollisionNormal());
             float bCrossNormal = Vector.crossProduct(radiusFromB, collision.getCollisionNormal());
             float invMassSum = a.getMassData().getInverseMass() + b.getMassData().getInverseMass();
-            invMassSum += (aCrossNormal * aCrossNormal) * a.getMassData().getInverseInertia() + (bCrossNormal * bCrossNormal) * b.getMassData().getInverseInertia();
-
+            invMassSum += ((aCrossNormal * aCrossNormal) * a.getMassData().getInverseInertia()) + ((bCrossNormal * bCrossNormal) * b.getMassData().getInverseInertia());
 
             float j = -(1.0f + e) * contactVelocity;
             j /= invMassSum;
@@ -49,17 +52,11 @@ public class ObjectMaths {
             a.applyImpulse(impulse.inverse(), radiusFromA);
             b.applyImpulse(impulse, radiusFromB);
 
-//            float ratio = a.getMassData().getMass() / massSum;
-//            a.applyImpulse(impulse.multiply(ratio).inverse(), radiusFromA);
-//
-//            ratio = b.getMassData().getMass() / massSum;
-//            b.applyImpulse(impulse.multiply(ratio), radiusFromB);
-
             relativeVelocity = b.getVelocity().plus(Vector.crossProduct(b.getAngularVelocity(), radiusFromB))
-                    .minus(a.getVelocity()).minus(Vector.crossProduct(a.getAngularVelocity(),radiusFromA));
+                    .minus(a.getVelocity()).minus(Vector.crossProduct(a.getAngularVelocity(), radiusFromA));
 
-            Vector tangentToNormal = relativeVelocity.minus(collision.getCollisionNormal()
-                    .multiply(Vector.dotProduct(relativeVelocity, collision.getCollisionNormal())));
+            Vector tangentToNormal = relativeVelocity.minus(
+                    collision.getCollisionNormal().multiply(Vector.dotProduct(relativeVelocity, collision.getCollisionNormal())));
             tangentToNormal = tangentToNormal.normalize();
 
             float jt = -Vector.dotProduct(relativeVelocity, tangentToNormal);
@@ -67,7 +64,7 @@ public class ObjectMaths {
             jt /= contactPointCount;
 
             if(floatEquals(jt, 0.0f))
-                continue;
+                break;
 
             float mu = sqrt(a.getMaterial().getStaticFriction() * b.getMaterial().getStaticFriction());
 

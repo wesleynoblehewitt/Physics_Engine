@@ -8,7 +8,7 @@ public class GameRunner extends BasicGame {
     private Boolean run = true;
     private Scene scene = new Scene();
     private float accumulator = 0;
-    private long frameStart = System.currentTimeMillis();
+    private long frameStart = System.nanoTime();
 
     GameRunner(String title) {
         super(title);
@@ -21,9 +21,9 @@ public class GameRunner extends BasicGame {
 
     @Override
     public void update(GameContainer gameContainer, int i) throws SlickException {
-        long currentTime = System.currentTimeMillis();
+        long currentTime = System.nanoTime();
 
-        accumulator += (currentTime - frameStart);
+        accumulator += (currentTime - frameStart) / 1000000000f;
         frameStart = currentTime;
 
         // Clamp accumulator to an arbitrary value
