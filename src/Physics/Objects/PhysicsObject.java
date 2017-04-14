@@ -35,20 +35,10 @@ public class PhysicsObject {
         if(Constants.floatEquals(massData.getMass(), 0f))
             return;
 
-        //velocity = velocity + (force * inverse_mass + gravity) * (dt/2)
-        //angular_velocity = angular_velocity + torque * inverse_inertia * dt//2
-        velocity = velocity.plus((force.multiply(massData.getInverseMass()).plus(gravityForce)).multiply(Constants.delta / 2.0f));
-
         // v += (1/m * F) * dt
-//        velocity = velocity.plus(force.multiply(massData.getInverseMass()).multiply(Constants.delta / 2.0f));
-
+        velocity = velocity.plus((force.multiply(massData.getInverseMass()).plus(gravityForce)).multiply(Constants.delta / 2.0f));
         angularVelocity += torque *  massData.getInverseInertia() * (Constants.delta / 2.0f);
 //        angularVelocity -= (angularVelocity * Constants.dragForce * (Constants.delta / 2.0f));
-//
-//        if(angularVelocity > 10f)
-//            angularVelocity = 10f;
-//        if(angularVelocity < -10f)
-//            angularVelocity = -10f;
     }
 
     public void updatePosition(){
@@ -60,6 +50,10 @@ public class PhysicsObject {
         shape.updatePosition(velocity.multiply(Constants.delta));
 
         updateVelocity();
+    }
+
+    public void updatePosition(Vector positionChange) {
+        shape.updatePosition(positionChange);
     }
 
     public void setOrientation(float orientation) {
