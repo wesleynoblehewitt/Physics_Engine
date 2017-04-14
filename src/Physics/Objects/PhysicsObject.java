@@ -38,7 +38,6 @@ public class PhysicsObject {
         // v += (1/m * F) * dt
         velocity = velocity.plus((force.multiply(massData.getInverseMass()).plus(gravityForce)).multiply(Constants.delta / 2.0f));
         angularVelocity += torque *  massData.getInverseInertia() * (Constants.delta / 2.0f);
-//        angularVelocity -= (angularVelocity * Constants.dragForce * (Constants.delta / 2.0f));
     }
 
     public void updatePosition(){

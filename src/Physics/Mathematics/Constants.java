@@ -9,10 +9,6 @@ public class Constants {
     private final static Vector gravity = new Vector(0, 9.807f);
     private final static float gravityScale = 8f;
     public final static Vector gravityForce = gravity.multiply(gravityScale);
-    private final static float drag = 0.1f;
-    private final static float dragScale = 1.0f;
-    public final static float dragForce = drag * dragScale;
-
 
     // Game constants
     private final static int fps = 60;

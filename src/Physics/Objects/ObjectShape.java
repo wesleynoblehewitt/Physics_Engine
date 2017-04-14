@@ -25,10 +25,6 @@ public abstract class ObjectShape {
         return position;
     }
 
-    public void setRotationalMatrix(RotationalMatrix rotationalMatrix) {
-        this.rotationalMatrix = rotationalMatrix;
-    }
-
     public RotationalMatrix getRotationalMatrix() {
         return rotationalMatrix;
     }
