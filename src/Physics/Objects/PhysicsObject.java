@@ -31,6 +31,12 @@ public class PhysicsObject {
         this.material = material;
     }
 
+    public PhysicsObject(Material material, ObjectShape shape) {
+        this.material = material;
+        this.shape = shape;
+        this.massData = shape.calculateMassData(material.getDensity());
+    }
+
     public void updateVelocity() {
         if(Constants.floatEquals(massData.getMass(), 0f))
             return;

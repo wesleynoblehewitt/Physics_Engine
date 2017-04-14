@@ -87,12 +87,12 @@ public class Vector {
         return a.x * b.y - a.y * b.x;
     }
 
-    public static Vector crossProduct(float s, Vector a){
-        return new Vector(s * a.y, -s * a.x);
+    public static Vector crossProduct(float s, Vector v){
+        return new Vector(-s * v.y, s * v.x);
     }
 
-    public static Vector crossProduct(Vector a, float s){
-        return new Vector(-s * a.y, s * a.x);
+    public static Vector crossProduct(Vector v, float s){
+        return new Vector(s * v.y, -s * v.x);
     }
 
     public void setX(float x) {

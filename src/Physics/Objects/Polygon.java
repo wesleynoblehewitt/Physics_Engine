@@ -1,5 +1,6 @@
 package Physics.Objects;
 
+import Physics.Mathematics.MassData;
 import Physics.Mathematics.Vector;
 import com.sun.istack.internal.Nullable;
 import org.newdawn.slick.Graphics;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import static Physics.Mathematics.Constants.floatEquals;
+import static Physics.Mathematics.Vector.crossProduct;
 
 public class Polygon extends ObjectShape {
 
@@ -78,7 +80,7 @@ public class Polygon extends ObjectShape {
             }
             Vector edge1 = vertices.get(nextHullIndex).minus(vertices.get(currentHullIndex));
             Vector edge2 = vertices.get(i).minus(vertices.get(currentHullIndex));
-            float crossProduct = Vector.crossProduct(edge1, edge2);
+            float crossProduct = crossProduct(edge1, edge2);
 
             if(crossProduct < 0.0){
                 nextHullIndex = i;
@@ -136,6 +138,33 @@ public class Polygon extends ObjectShape {
             Vector vertex = iterator.next();
             iterator.set(vertex.plus(positionChange));
         }
+    }
+
+    @Override
+    public MassData calculateMassData(float density) {
+        float totalArea = 0f;
+        float inertia = 0f;
+
+        for(int i = 0; i < vertices.size(); i++) {
+            int j = i + 1 == vertices.size() ? 0 : i + 1;
+
+            Vector vertices1 = vertices.get(i);
+            Vector vertices2 = vertices.get(j);
+            float verticesCross = crossProduct(vertices1, vertices2);
+
+            float triangularArea = 0.5f * verticesCross;
+            totalArea += triangularArea;
+
+            float x = (vertices1.getX() * vertices1.getX()) + (vertices2.getX() * vertices1.getX()) + (vertices2.getX() * vertices2.getX());
+            float y = (vertices1.getY() * vertices1.getY()) + (vertices2.getY() * vertices1.getY()) + (vertices2.getY() * vertices2.getY());
+
+            inertia += (0.25f * (1.0f/3.0f) * verticesCross) * (x + y);
+        }
+
+        float mass = density * totalArea;
+        inertia *= density;
+
+        return new MassData(mass, inertia);
     }
 
     @Override

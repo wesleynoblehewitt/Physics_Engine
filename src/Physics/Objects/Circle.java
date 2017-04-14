@@ -1,6 +1,7 @@
 package Physics.Objects;
 
 import Physics.Mathematics.Constants;
+import Physics.Mathematics.MassData;
 import Physics.Mathematics.Vector;
 import org.newdawn.slick.Graphics;
 
@@ -17,10 +18,19 @@ public class Circle extends ObjectShape{
         return radius;
     }
 
+    @Override
+    MassData calculateMassData(float density) {
+        float mass = ((float) Math.PI) * radius * radius * density;
+        float inertia = mass * radius * radius;
+        return new MassData(mass, inertia);
+    }
+
+    @Override
     public Vector getBoundingBoxMin(){
         return new Vector(position.getX() - radius, position.getY() - radius);
     }
 
+    @Override
     public Vector getBoundingBoxMax(){
         return new Vector(position.getX() + radius, position.getY() + radius);
     }

@@ -2,7 +2,8 @@ package Physics.Objects;
 
 public enum Material {
 
-    SOLID(0.0f, 0.4f, 0.9f, 0.5f);
+    SOLID(0.0f, 0.4f, 0.9f, 0.5f),
+    TEST(0.5f, 0.5f, 0.6f, 0.4f);
 
     private float density;
     private float restitution;

@@ -1,5 +1,6 @@
 package Physics.Objects;
 
+import Physics.Mathematics.MassData;
 import Physics.Mathematics.RotationalMatrix;
 import Physics.Mathematics.Vector;
 import org.newdawn.slick.Graphics;
@@ -29,6 +30,7 @@ public abstract class ObjectShape {
         return rotationalMatrix;
     }
 
+    abstract MassData calculateMassData(float density);
     public abstract Vector getBoundingBoxMin();
     public abstract Vector getBoundingBoxMax();
 

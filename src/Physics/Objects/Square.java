@@ -1,5 +1,6 @@
 package Physics.Objects;
 
+import Physics.Mathematics.MassData;
 import Physics.Mathematics.Vector;
 import org.newdawn.slick.Graphics;
 
@@ -22,6 +23,11 @@ public class Square extends ObjectShape {
 
     public float getHeight() {
         return height;
+    }
+
+    @Override
+    MassData calculateMassData(float density) {
+        return new MassData(0, 0);
     }
 
     public Vector getBoundingBoxMin(){

@@ -23,7 +23,7 @@ public class CollisionChecker {
         if(shapeA instanceof Polygon){
             if(shapeB instanceof Polygon){
                 return PolygonVsPolygonCheck(info);
-            } else if(shapeB instanceof Circle){
+            } else {
                 PhysicsObject polygon = info.getObjectA();
                 PhysicsObject circle = info.getObjectB();
                 info.setObjectA(circle);
@@ -36,34 +36,12 @@ public class CollisionChecker {
                 if(result)
                     info.setCollisionNormal(info.getCollisionNormal().inverse());
                 return result;
-            } else {
-                return PolygonVsSquareCheck(info);
-            }
-        } else if(shapeA instanceof Circle){
-            if(shapeB instanceof Polygon){
-                return CircleVsPolygonCheck(info);
-            } else if(shapeB instanceof Circle){
-                return CircleVsCircleCheck(info);
-            } else {
-                PhysicsObject circle = info.getObjectA();
-                PhysicsObject square = info.getObjectB();
-                info.setObjectA(square);
-                info.setObjectB(circle);
-
-                return SquareVsCircleCheck(info);
             }
         } else {
             if(shapeB instanceof Polygon){
-                PhysicsObject square = info.getObjectA();
-                PhysicsObject polygon = info.getObjectB();
-                info.setObjectA(polygon);
-                info.setObjectB(square);
-
-                return PolygonVsSquareCheck(info);
-            } else if(shapeB instanceof Circle){
-                return SquareVsCircleCheck(info);
+                return CircleVsPolygonCheck(info);
             } else {
-                return SquareVsSquareCheck(info);
+                return CircleVsCircleCheck(info);
             }
         }
     }
@@ -344,9 +322,9 @@ public class CollisionChecker {
             penetrationDepth -= separation;
         }
 
-        penetrationDepth /= cp;
+        penetrationDepth = cp > 0 ?
+                penetrationDepth / cp : 0;
         info.setPenetrationDepth(penetrationDepth);
-
         return true;
     }
 

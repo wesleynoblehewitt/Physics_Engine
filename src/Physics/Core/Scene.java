@@ -29,23 +29,23 @@ class Scene {
         vertices.add(new Vector(400, 470));
         vertices.add(new Vector(400, 430));
 
-        PhysicsObject object = new PhysicsObject(new MassData(0, 0), Material.SOLID, new Polygon(new Vector(500, 450), vertices));
-//        object.setOrientation(15f);
+        PhysicsObject object = new PhysicsObject(Material.SOLID, new Polygon(new Vector(500, 450), vertices));
+        object.setOrientation(24.8f);
         addObject(object);
 
-        PhysicsObject ballSolid = new PhysicsObject(new MassData(0, 0), Material.SOLID, new Circle(new Vector(450, 450), 30));
+        PhysicsObject ballSolid = new PhysicsObject(Material.SOLID, new Circle(new Vector(450, 450), 30));
 //        addObject(ballSolid);
 
         vertices.clear();
-        vertices.add(new Vector(310, 210));
-        vertices.add(new Vector(310, 190));
-        vertices.add(new Vector(490, 210));
-        vertices.add(new Vector(490, 190));
-        PhysicsObject polygon = new PhysicsObject(new MassData(5760, 1.62912013E9f), Material.SOLID, new Polygon(new Vector(400, 200), vertices));
+        vertices.add(new Vector(350, 210));
+        vertices.add(new Vector(350, 190));
+        vertices.add(new Vector(530, 210));
+        vertices.add(new Vector(530, 190));
+        PhysicsObject polygon = new PhysicsObject(new MassData(5760, 1.62912013E9f), Material.SOLID, new Polygon(new Vector(440, 200), vertices));
         addObject(polygon);
 
-        PhysicsObject ball = new PhysicsObject(new MassData(500, 0.6E10f), Material.SOLID, new Circle(new Vector(480, 50), 10));
-        addObject(ball);
+        PhysicsObject ball = new PhysicsObject(Material.TEST, new Circle(new Vector(480, 50), 10));
+//        addObject(ball);
     }
 
     public void addObject(PhysicsObject object){
