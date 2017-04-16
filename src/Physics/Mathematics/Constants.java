@@ -21,4 +21,8 @@ public class Constants {
 
     final static float relative_bias = 0.95f;
     final static float absolute_bias = 0.01f;
+
+    public final static int LeftClick = 0;
+    public final static int MiddleClick = 2;
+    public final static int RightClick = 1;
 }

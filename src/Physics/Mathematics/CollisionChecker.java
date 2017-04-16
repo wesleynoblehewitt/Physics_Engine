@@ -80,14 +80,14 @@ public class CollisionChecker {
         Square shapeB = (Square) b.getShape();
 
         Vector vectorFromAToB = b.getPosition().minus(a.getPosition());
-        float aExtent =  shapeA.getWidth()/2;
-        float bExtent = shapeB.getWidth()/2;
+        float aExtent =  shapeA.getWidth() / 2;
+        float bExtent = shapeB.getWidth() / 2;
 
         float xOverlap = aExtent + bExtent - Math.abs(vectorFromAToB.getX());
 
         if(xOverlap > 0){
-            aExtent = shapeA.getHeight()/2;
-            bExtent = shapeB.getHeight()/2;
+            aExtent = shapeA.getHeight() / 2;
+            bExtent = shapeB.getHeight() / 2;
 
             float yOverlap = aExtent + bExtent - Math.abs(vectorFromAToB.getY());
             if(yOverlap > 0){
@@ -266,7 +266,6 @@ public class CollisionChecker {
 
         FaceQueryResults queryB = findAxisOfMinimumPenetration(polygonB, polygonA);
         if(queryB.separation > 0.0f) return false;
-
         // Calculate penetration depth, collision normal
 
         boolean queryAisSmaller = queryA.separation < (queryB.separation * relative_bias + queryA.separation * absolute_bias);
@@ -341,10 +340,6 @@ public class CollisionChecker {
         for(int i = 0; i < verticesA.size(); i++) {
             Vector normal = rotationalMatrixB.multiply(rotationalMatrixA.multiply(normalsA.get(i)));
             Vector supportVector = polygonB.getSupportVector(normal.inverse(), polygonB.getPosition());
-//            v = points.get(i);
-//            v = Au.multiply(v).plus(Apos);
-//            v = v.minus(Bpos);
-//            v = Bu.multiply(v);
 
             Vector v = verticesA.get(i).minus(polygonA.getPosition());
             v = rotationalMatrixA.multiply(v).plus(polygonA.getPosition());

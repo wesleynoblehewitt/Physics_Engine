@@ -9,6 +9,7 @@ public abstract class ObjectShape {
 
     Vector position;
     RotationalMatrix rotationalMatrix = new RotationalMatrix(0);
+    float radius;
 
     ObjectShape(Vector position){
         this.position = position;
@@ -30,9 +31,22 @@ public abstract class ObjectShape {
         return rotationalMatrix;
     }
 
-    abstract MassData calculateMassData(float density);
-    public abstract Vector getBoundingBoxMin();
-    public abstract Vector getBoundingBoxMax();
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
 
+    public float getRadius() {
+        return radius;
+    }
+
+    public Vector getBoundingBoxMin(){
+        return new Vector(position.getX() - radius, position.getY() - radius);
+    }
+
+    public Vector getBoundingBoxMax(){
+        return new Vector(position.getX() + radius, position.getY() + radius);
+    }
+
+    abstract MassData calculateMassData(float density);
     abstract void render(Graphics g);
 }

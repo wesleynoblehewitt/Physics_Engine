@@ -47,8 +47,10 @@ public class SpatialHasher {
 
     public void registerObject(PhysicsObject obj){
         List<Integer> cellIDs = getCellsObjectIsIn(obj);
-        for(Integer ID: cellIDs){
-            buckets.get(ID).add(obj);
+        for(Integer ID: cellIDs) {
+            List<PhysicsObject> objects = buckets.getOrDefault(ID, new ArrayList<>());
+            objects.add(obj);
+            buckets.put(ID, objects);
         }
     }
 
@@ -58,15 +60,15 @@ public class SpatialHasher {
         Vector max = obj.getBoundingBoxMax();
 
         Vector range = max.minus(min);
-        float width = screenWidth/cellSize;
+        float width = screenWidth / cellSize;
 
         int jumpi = 1;
         int jumpj = 1;
         if(range.getX() > cellSize){
-            jumpi = cellSize/2;
+            jumpi = cellSize / 2;
         }
         if(range.getY() > cellSize){
-            jumpj = cellSize/2;
+            jumpj = cellSize / 2;
         }
 
         for(int i = 0; i < range.getX(); i += jumpi){
@@ -87,8 +89,8 @@ public class SpatialHasher {
 
     private void addBucket(Vector location, float width, List<Integer> cells){
         int cellPosition = (int)(
-                (Math.floor(location.getX()/cellSize))
-                + (Math.floor(location.getY()/cellSize))
+                (Math.floor(location.getX() / cellSize))
+                + (Math.floor(location.getY() / cellSize))
                 * width);
 
         if(!cells.contains(cellPosition))
@@ -99,7 +101,8 @@ public class SpatialHasher {
         Set<PhysicsObject> nearbyObjects = new HashSet<>();
         List<Integer> cellsObjectIsIn = getCellsObjectIsIn(object);
         for(Integer i: cellsObjectIsIn) {
-            nearbyObjects.addAll(buckets.get(i));
+            List<PhysicsObject> objects = buckets.getOrDefault(i, new ArrayList<>());
+            nearbyObjects.addAll(objects);
         }
 
         nearbyObjects.remove(object);

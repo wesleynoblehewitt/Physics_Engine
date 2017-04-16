@@ -7,8 +7,6 @@ import org.newdawn.slick.Graphics;
 
 public class Circle extends ObjectShape{
 
-    private float radius;
-
     public Circle(Vector position, float radius) {
         super(position);
         this.radius = radius;
@@ -23,16 +21,6 @@ public class Circle extends ObjectShape{
         float mass = ((float) Math.PI) * radius * radius * density;
         float inertia = mass * radius * radius;
         return new MassData(mass, inertia);
-    }
-
-    @Override
-    public Vector getBoundingBoxMin(){
-        return new Vector(position.getX() - radius, position.getY() - radius);
-    }
-
-    @Override
-    public Vector getBoundingBoxMax(){
-        return new Vector(position.getX() + radius, position.getY() + radius);
     }
 
     @Override

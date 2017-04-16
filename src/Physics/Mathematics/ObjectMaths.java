@@ -19,8 +19,24 @@ public class ObjectMaths {
     public CollisionInfo resolveCollision(CollisionInfo collision) {
         PhysicsObject a = collision.getObjectA();
         PhysicsObject b = collision.getObjectB();
+
+        if(a.getMassData().getMass() + b.getMassData().getMass() == 0)
+            return null;
+
         float e = Math.min(a.getRestitution(), b.getRestitution());
         float contactPointCount = (float) collision.getContactPoints().size();
+
+        for(Vector contactPoint : collision.getContactPoints()){
+            Vector radiusFromA = contactPoint.minus(a.getPosition());
+            Vector radiusFromB = contactPoint.minus(b.getPosition());
+
+            Vector relativeVelocity = b.getVelocity().plus(Vector.crossProduct(b.getAngularVelocity(), radiusFromB))
+                    .minus(a.getVelocity()).minus(Vector.crossProduct(a.getAngularVelocity(), radiusFromA));
+
+            if(relativeVelocity.lengthSquared() < (Constants.gravityForce.multiply(Constants.delta)).lengthSquared() + Constants.epsilon){
+                e = 0.0f;
+            }
+        }
 
         Vector velocityOfA = a.getVelocity();
         float angularVelocityOfA = a.getAngularVelocity();

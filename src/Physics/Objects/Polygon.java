@@ -113,6 +113,7 @@ public class Polygon extends ObjectShape {
         }
         xExtent = maxX - minX;
         yExtent = maxY - minY;
+        radius = Math.max(xExtent, yExtent);
     }
 
     @Nullable
@@ -165,16 +166,6 @@ public class Polygon extends ObjectShape {
         inertia *= density;
 
         return new MassData(mass, inertia);
-    }
-
-    @Override
-    public Vector getBoundingBoxMin() {
-        return new Vector(position.getX() - xExtent, position.getY() - yExtent);
-    }
-
-    @Override
-    public Vector getBoundingBoxMax() {
-        return new Vector(position.getX() + xExtent, position.getY() + yExtent);
     }
 
     public List<Vector> getVertices() { return vertices; }
