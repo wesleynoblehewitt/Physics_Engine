@@ -1,11 +1,15 @@
 package Physics.Objects;
 
+import Physics.Mathematics.CollisionImpulse;
 import Physics.Mathematics.Constants;
 import Physics.Mathematics.MassData;
 import Physics.Mathematics.Vector;
 import com.sun.istack.internal.NotNull;
 import javafx.scene.transform.Transform;
 import org.newdawn.slick.Graphics;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static Physics.Mathematics.Constants.gravityForce;
 import static Physics.Mathematics.Vector.crossProduct;
@@ -24,6 +28,8 @@ public class PhysicsObject {
     final private MassData massData;
     final private ObjectShape shape;
     final private Material material;
+
+    private List<CollisionImpulse> impulses = new ArrayList<>();
 
     public PhysicsObject(MassData massData, Material material, ObjectShape shape){
         this.massData = massData;
@@ -78,14 +84,35 @@ public class PhysicsObject {
         force = force.plus(additionalForce);
     }
 
+
+    public void addImpulse(CollisionImpulse impulse) {
+        impulses.add(impulse);
+    }
+
+    public void applyImpulses() {
+        for(CollisionImpulse impulse : impulses) {
+            applyImpulse(impulse.getImpulse(), impulse.getContactVector());
+            applyImpulse(impulse.getTangentImpulse(), impulse.getContactVector());
+        }
+    }
+
     public void applyImpulse(Vector impulse, Vector contactPoint) {
-        velocity = velocity.plus(impulse.multiply(massData.getInverseMass()));
-        angularVelocity += crossProduct(contactPoint, impulse) * massData.getInverseInertia();
+        velocity = impulseVelocity(impulse);
+        angularVelocity = impulseAngularVelocity(impulse, contactPoint);
+    }
+
+    public Vector impulseVelocity(Vector impulse) {
+        return velocity.plus(impulse.multiply(massData.getInverseMass()));
+    }
+
+    public float impulseAngularVelocity(Vector impulse, Vector contactPoint) {
+        return angularVelocity + crossProduct(contactPoint, impulse) * massData.getInverseInertia();
     }
 
     public void resetForces() {
         force = new Vector(0f, 0f);
         torque = 0f;
+        impulses.clear();
     }
 
     @NotNull

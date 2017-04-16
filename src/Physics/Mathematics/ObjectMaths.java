@@ -65,11 +65,14 @@ public class ObjectMaths {
             j /= contactPointCount;
 
             Vector impulse = collision.getCollisionNormal().multiply(j);
-            a.applyImpulse(impulse.inverse(), radiusFromA);
-            b.applyImpulse(impulse, radiusFromB);
 
-            relativeVelocity = b.getVelocity().plus(Vector.crossProduct(b.getAngularVelocity(), radiusFromB))
-                    .minus(a.getVelocity()).minus(Vector.crossProduct(a.getAngularVelocity(), radiusFromA));
+            Vector impulsedVelocityA = a.impulseVelocity(impulse.inverse());
+            float impulsedAngularVelocityA = a.impulseAngularVelocity(impulse.inverse(), radiusFromA);
+            Vector impulsedVelocityB = b.impulseVelocity(impulse);
+            float impulsedAngularVelocityB = b.impulseAngularVelocity(impulse, radiusFromB);
+
+            relativeVelocity = impulsedVelocityB.plus(Vector.crossProduct(impulsedAngularVelocityB, radiusFromB))
+                    .minus(impulsedVelocityA).minus(Vector.crossProduct(impulsedAngularVelocityA, radiusFromA));
 
             Vector tangentToNormal = relativeVelocity.minus(
                     collision.getCollisionNormal().multiply(Vector.dotProduct(relativeVelocity, collision.getCollisionNormal())));
@@ -92,8 +95,9 @@ public class ObjectMaths {
                 frictionImpulse = tangentToNormal.multiply(-j).multiply(dynamicFriction);
             }
 
-            a.applyImpulse(frictionImpulse.inverse(), radiusFromA);
-            b.applyImpulse(frictionImpulse, radiusFromB);
+            a.addImpulse(new CollisionImpulse(impulse.inverse(), radiusFromA, frictionImpulse.inverse()));
+            b.addImpulse(new CollisionImpulse(impulse, radiusFromB, frictionImpulse));
+
         }
         return collision;
     }

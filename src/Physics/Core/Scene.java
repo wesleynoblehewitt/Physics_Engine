@@ -104,14 +104,14 @@ class Scene {
         PhysicsObject circle2 = new PhysicsObject(Material.SOLID, new Circle(new Vector(230, 300), 15));
 
         addObject(base);
-        addObject(base2);
-        addObject(triangle);
-        addObject(circle2);
-        addObject(square);
-        addObject(square2);
+//        addObject(base2);
+//        addObject(triangle);
+//        addObject(circle2);
+//        addObject(square);
+//        addObject(square2);
     }
 
-    public void addObject(PhysicsObject object){
+    void addObject(PhysicsObject object){
         objects.add(object);
     }
 
@@ -130,6 +130,7 @@ class Scene {
         objects.forEach(PhysicsObject::updateVelocity);
         //Solve collisions
         List<CollisionInfo> collisions = narrowPhase(possibleCollisions);
+        objects.forEach(PhysicsObject::applyImpulses);
         //Integrate velocities
         objects.forEach(PhysicsObject::updatePosition);
         //Correct positions
