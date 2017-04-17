@@ -29,7 +29,7 @@ public class PhysicsObject {
     final private ObjectShape shape;
     final private Material material;
 
-    private List<CollisionImpulse> impulses = new ArrayList<>();
+    List<CollisionImpulse> impulses = new ArrayList<>();
 
     public PhysicsObject(MassData massData, Material material, ObjectShape shape){
         this.massData = massData;
@@ -49,7 +49,7 @@ public class PhysicsObject {
 
         // v += (1/m * F) * dt
         velocity = velocity.plus((force.multiply(massData.getInverseMass()).plus(gravityForce)).multiply(Constants.delta / 2.0f));
-        angularVelocity += torque *  massData.getInverseInertia() * (Constants.delta / 2.0f);
+        angularVelocity += torque * massData.getInverseInertia() * (Constants.delta / 2.0f);
     }
 
     public void updatePosition(){
@@ -91,8 +91,11 @@ public class PhysicsObject {
 
     public void applyImpulses() {
         for(CollisionImpulse impulse : impulses) {
-            applyImpulse(impulse.getImpulse(), impulse.getContactVector());
-            applyImpulse(impulse.getTangentImpulse(), impulse.getContactVector());
+            velocity = velocity.plus(impulse.getImpulse().multiply(massData.getInverseMass()));
+            angularVelocity += massData.getInverseInertia() * crossProduct(impulse.getContactVector(), impulse.getImpulse());
+
+            velocity = velocity.plus(impulse.getTangentImpulse().multiply(massData.getInverseMass()));
+            angularVelocity += massData.getInverseInertia() * crossProduct(impulse.getContactVector(), impulse.getTangentImpulse());
         }
     }
 

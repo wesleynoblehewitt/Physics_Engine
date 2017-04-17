@@ -9,9 +9,9 @@ public class Vector {
 
     public Vector(float x, float y){
         if(floatEquals(x, -0.0f))
-            x = 0;
+            x = 0f;
         if(floatEquals(y, -0.0f))
-            y = 0;
+            y = 0f;
         this.x = x;
         this.y = y;
     }
@@ -51,7 +51,7 @@ public class Vector {
         return mult;
     }
 
-    public Vector divide(float n){
+    public Vector divide(float n) throws IllegalArgumentException{
         if(n == 0)
             throw new IllegalArgumentException("Attempted to divide by 0");
 

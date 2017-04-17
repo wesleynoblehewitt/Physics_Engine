@@ -104,19 +104,15 @@ class Scene {
         PhysicsObject circle2 = new PhysicsObject(Material.SOLID, new Circle(new Vector(230, 300), 15));
 
         addObject(base);
-//        addObject(base2);
-//        addObject(triangle);
-//        addObject(circle2);
-//        addObject(square);
-//        addObject(square2);
+        addObject(base2);
+        addObject(triangle);
+        addObject(circle2);
+        addObject(square);
+        addObject(square2);
     }
 
     void addObject(PhysicsObject object){
         objects.add(object);
-    }
-
-    public void removeObject(PhysicsObject object){
-        objects.remove(object);
     }
 
     void reset() {
@@ -155,7 +151,13 @@ class Scene {
     }
 
     private CollisionInfo resolveCollisions(CollisionInfo collision) {
-        return collisionChecker.checkCollision(collision) ? objectMaths.resolveCollision(collision) : null;
+        try {
+            return collisionChecker.checkCollision(collision) ? objectMaths.resolveCollision(collision) : null;
+        } catch (IllegalArgumentException e) {
+            System.out.println("failed to resolve collision for objects with error " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
     void render(Graphics g){

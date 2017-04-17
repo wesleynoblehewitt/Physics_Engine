@@ -16,7 +16,7 @@ public class CollisionChecker {
         return collisionChecker;
     }
 
-    public boolean checkCollision(CollisionInfo info){
+    public boolean checkCollision(CollisionInfo info) throws IllegalArgumentException{
         ObjectShape shapeA = info.getObjectA().getShape();
         ObjectShape shapeB = info.getObjectB().getShape();
 
@@ -46,7 +46,7 @@ public class CollisionChecker {
         }
     }
 
-    public boolean CircleVsCircleCheck(CollisionInfo info){
+    public boolean CircleVsCircleCheck(CollisionInfo info) throws IllegalArgumentException {
         PhysicsObject a = info.getObjectA();
         PhysicsObject b = info.getObjectB();
 
@@ -321,8 +321,7 @@ public class CollisionChecker {
             penetrationDepth -= separation;
         }
 
-        penetrationDepth = cp > 0 ?
-                penetrationDepth / cp : 0;
+        penetrationDepth = cp > 0 ? penetrationDepth / cp : 0;
         info.setPenetrationDepth(penetrationDepth);
         return true;
     }

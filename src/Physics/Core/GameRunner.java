@@ -56,49 +56,44 @@ public class GameRunner extends BasicGame {
 
     @Override
     public void mouseClicked(int button, int x, int y, int clickCount){
-        Random random = new Random();
-        // Add random circle on left click
-        if(button == Constants.LeftClick){
-            int radius = random.nextInt(10) + 5;
-            PhysicsObject co = new PhysicsObject(Material.TEST , new Circle(new Vector(x, y), radius));
-            scene.addObject(co);
-        }
-
-        // Add random polygon on right click
-        if(button == Constants.RightClick){
-            int contacts = random.nextInt(10 - 2) + 3;
-
-            Vector[] points = new Vector[contacts];
-            int dist = random.nextInt(20) + 10;
-            for(int i = 0; i < contacts; i++){
-                int Vx = random.nextInt(2 * dist) - dist;
-                int Vy = random.nextInt(2 * dist) - dist;
-                if(Vx <10 &&  Vx> -10){
-                    Vx = 20;
-                }
-                if(Vy < 10 && Vy> -10){
-                    Vy = 20;
-                }
-                points[i] = new Vector(Vx, Vy);
+        try {
+            Random random = new Random();
+            // Add random circle on left click
+            if (button == Constants.LeftClick) {
+                int radius = random.nextInt(10) + 5;
+                PhysicsObject co = new PhysicsObject(Material.TEST, new Circle(new Vector(x, y), radius));
+                scene.addObject(co);
             }
 
-            int mat = random.nextInt(4) + 1;
-//			MyObject po = new MyObject(new Vectors(x, y), Material.getMaterialByID(mat), points);
-//			float pi = (float) (Math.PI - (random.nextFloat() * 2 * Math.PI));
-//			po.setOrientation(pi);
-//			add(po);
-            List<Vector> vertices = new ArrayList<>();
-            vertices.add(new Vector(x - 100, y + 10));
-            vertices.add(new Vector(x - 100, y - 10));
-            vertices.add(new Vector(x + 100, y + 10));
-            vertices.add(new Vector(x + 100, y - 10));
-            PhysicsObject o = new PhysicsObject(Material.TEST, new Polygon(new Vector(x, y), vertices));
-//            o.setOrientation((float) Math.PI / 2f);
-            scene.addObject(o);
-        }
+            // Add random polygon on right click
+            if (button == Constants.RightClick) {
+                int contacts = random.nextInt(10 - 2) + 3;
 
-        if(button == Constants.MiddleClick){
-            scene.reset();
+                List<Vector> points = new ArrayList<>();
+                int dist = random.nextInt(20) + 10;
+                for (int i = 0; i < contacts; i++) {
+                    int Vx = random.nextInt(2 * dist) - dist;
+                    int Vy = random.nextInt(2 * dist) - dist;
+                    if (Vx < 10 && Vx > -10)
+                        Vx = 20;
+                    if (Vy < 10 && Vy > -10)
+                        Vy = 20;
+                    points.add(new Vector(x + Vx, y + Vy));
+                }
+
+                PhysicsObject po = new PhysicsObject(Material.TEST, new Polygon(new Vector(x, y), points));
+                float pi = (float) (Math.PI - (random.nextFloat() * 2 * Math.PI));
+                po.setOrientation(pi);
+                scene.addObject(po);
+            }
+
+            if (button == Constants.MiddleClick) {
+                scene.reset();
+            }
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println("Failed to initiate object with error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

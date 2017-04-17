@@ -53,7 +53,7 @@ public class ObjectMaths {
             float contactVelocity = Vector.dotProduct(relativeVelocity, collision.getCollisionNormal());
 
             if(contactVelocity > 0)
-                continue;
+                break;
 
             float aCrossNormal = Vector.crossProduct(radiusFromA, collision.getCollisionNormal());
             float bCrossNormal = Vector.crossProduct(radiusFromB, collision.getCollisionNormal());
@@ -83,7 +83,7 @@ public class ObjectMaths {
             jt /= contactPointCount;
 
             if(floatEquals(jt, 0.0f))
-                continue;
+                break;
 
             float mu = sqrt(a.getMaterial().getStaticFriction() * b.getMaterial().getStaticFriction());
 

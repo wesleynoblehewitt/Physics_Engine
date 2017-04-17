@@ -22,7 +22,7 @@ public class Polygon extends ObjectShape {
 
 
     //Vertices list indicates position of each vertices
-    public Polygon(Vector position, List<Vector> vertices)  {
+    public Polygon(Vector position, List<Vector> vertices) throws IllegalArgumentException {
         super(position);
         vertexCount = vertices.size();
         if(vertexCount < 3) throw new IllegalArgumentException("Attempted to create a Polygon with less than 3 sides");
@@ -149,8 +149,8 @@ public class Polygon extends ObjectShape {
         for(int i = 0; i < vertices.size(); i++) {
             int j = i + 1 == vertices.size() ? 0 : i + 1;
 
-            Vector vertices1 = vertices.get(i);
-            Vector vertices2 = vertices.get(j);
+            Vector vertices1 = vertices.get(i).minus(position);
+            Vector vertices2 = vertices.get(j).minus(position);
             float verticesCross = crossProduct(vertices1, vertices2);
 
             float triangularArea = 0.5f * verticesCross;
